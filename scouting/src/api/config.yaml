@@ -1,0 +1,6 @@
+postgres:
+  host: "db.kpsaecoauyhpzpfasdly.supabase.co"
+  port: 5432
+  name: "postgres"
+  user: "postgres"
+  password: "adspostgres"
