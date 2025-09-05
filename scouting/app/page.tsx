@@ -5,7 +5,7 @@ import { Users, FileText, Trophy, BarChart3, Zap, Plus, UserPlus } from "lucide-
 
 export default function HomePage() {
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-20 sm:pb-8">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
       {/* Hero Section */}
       <div className="text-center mb-8 sm:mb-12">
         <div className="flex items-center justify-center mb-3 sm:mb-4">

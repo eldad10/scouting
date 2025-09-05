@@ -12,7 +12,7 @@ export default function StatisticsPage() {
   const searchParams = useSearchParams()
   const [selectedTeam, setSelectedTeam] = useState("1234")
   const [timeRange, setTimeRange] = useState("season")
-  const [teams, setTeams] = useState([])
+  const [teams, setTeams] = useState<string[]>([])
   const [coralPerformanceData, setCoralPerformanceData] = useState([])
   const [autoVsTeleopData, setAutoVsTeleopData] = useState([])
   const [climbingPerformanceData, setClimbingPerformanceData] = useState([])
@@ -25,7 +25,7 @@ export default function StatisticsPage() {
       try {
         const teamsData = await api.getTeams()
         setTeams(teamsData.map((team) => team.teamNumber))
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message)
       }
     }
@@ -43,7 +43,7 @@ export default function StatisticsPage() {
           setCoralPerformanceData(stats.coralData || [])
           setAutoVsTeleopData(stats.autoVsTeleop || [])
           setClimbingPerformanceData(stats.climbingData || [])
-          const netData = (stats.coralData || []).map((match, index) => ({
+          const netData = (stats.coralData || []).map((match:any, index:any) => ({
             match: `Match ${index + 1}`,
             netAuto: Math.floor(Math.random() * 8) + 2,
             netTeleop: Math.floor(Math.random() * 12) + 5,
@@ -51,7 +51,7 @@ export default function StatisticsPage() {
           }))
           setNetScoringData(netData)
         }
-      } catch (err) {
+      } catch (err:any) {
         setError(err.message)
       } finally {
         setLoading(false)
@@ -92,7 +92,7 @@ export default function StatisticsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-20 sm:pb-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Team Statistics</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
@@ -109,7 +109,7 @@ export default function StatisticsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-20 sm:pb-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Team Statistics</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
@@ -125,7 +125,7 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-20 sm:pb-8">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Team Statistics</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
