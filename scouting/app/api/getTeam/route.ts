@@ -4,10 +4,11 @@ import { Team } from "@/lib/api";
 import dotenv from "dotenv";
 dotenv.config();
 export async function GET() {
-  
+  dotenv.config();
   const client = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!,process.env.EXPO_PUBLIC_SUPABASE_KEY! );
 
    const {data, error} = await client.from('teams').select("*");
+
   const transformed = data?.map(row=>{
     return new Team(row.teamnumber,  row.teamname)
   })
