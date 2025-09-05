@@ -1,2 +1,0 @@
-export const url = 'https://kpsaecoauyhpzpfasdly.supabase.co'
-export const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc2FlY29hdXlocHpwZmFzZGx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxNzk2MzgsImV4cCI6MjA2NTc1NTYzOH0.e4CnQkHVSvbwtSV0Vyn2rvEvC56kdERspKHettHl814'

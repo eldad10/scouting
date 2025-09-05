@@ -79,15 +79,17 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Team Search</h1>
-        <p className="text-muted-foreground">Search and explore robotics teams in this competition</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Team Search</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Search and explore robotics teams in this competition
+        </p>
       </div>
 
       {/* Search and Filter Section */}
-      <div className="mb-8 space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -99,9 +101,9 @@ export default function TeamsPage() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="sm:w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -114,40 +116,42 @@ export default function TeamsPage() {
       </div>
 
       {/* Results Summary */}
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground">
+      <div className="mb-4 sm:mb-6">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           {loading ? "Loading teams..." : `Showing ${filteredTeams.length} teams`}
         </p>
       </div>
 
       {/* Team Results Grid */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground mt-4">Loading teams...</p>
+        <div className="text-center py-8 sm:py-12">
+          <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground mt-3 sm:mt-4 text-sm sm:text-base">Loading teams...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {filteredTeams.map((team) => (
             <Card key={team.teamNumber} className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
+              <CardHeader className="pb-3 sm:pb-6">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">Team {team.teamNumber}</CardTitle>
-                    <CardDescription className="font-medium text-foreground">{team.teamName}</CardDescription>
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-base sm:text-lg truncate">Team {team.teamNumber}</CardTitle>
+                    <CardDescription className="font-medium text-foreground text-sm sm:text-base truncate">
+                      {team.teamName}
+                    </CardDescription>
                   </div>
                   {team.ranking && (
                     <div
-                      className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getRankingBadgeColor(team.ranking)}`}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-2 ${getRankingBadgeColor(team.ranking)}`}
                     >
                       <Trophy className="h-3 w-3" />#{team.ranking}
                     </div>
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4 pt-0">
                 <Link href={`/statistics?team=${team.teamNumber}`}>
-                  <Button className="w-full" size="sm">
+                  <Button className="w-full text-sm sm:text-base" size="sm">
                     View Statistics
                   </Button>
                 </Link>
@@ -158,10 +162,10 @@ export default function TeamsPage() {
       )}
 
       {!loading && filteredTeams.length === 0 && (
-        <div className="text-center py-12">
-          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No teams found</h3>
-          <p className="text-muted-foreground">Try adjusting your search criteria</p>
+        <div className="text-center py-8 sm:py-12">
+          <Users className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+          <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No teams found</h3>
+          <p className="text-muted-foreground text-sm sm:text-base">Try adjusting your search criteria</p>
         </div>
       )}
     </div>

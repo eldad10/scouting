@@ -108,14 +108,16 @@ export default function FormsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Scouting Forms</h1>
-          <p className="text-muted-foreground">Browse and manage scouting forms from qualification matches</p>
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Scouting Forms</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Browse and manage scouting forms from qualification matches
+          </p>
         </div>
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading forms...</p>
+        <div className="text-center py-8 sm:py-12">
+          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-primary mx-auto mb-3 sm:mb-4"></div>
+          <p className="text-muted-foreground text-sm sm:text-base">Loading forms...</p>
         </div>
       </div>
     )
@@ -123,43 +125,47 @@ export default function FormsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Scouting Forms</h1>
-          <p className="text-muted-foreground">Browse and manage scouting forms from qualification matches</p>
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Scouting Forms</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Browse and manage scouting forms from qualification matches
+          </p>
         </div>
-        <div className="text-center py-12">
-          <FileText className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">Error loading forms</h3>
-          <p className="text-muted-foreground">{error}</p>
+        <div className="text-center py-8 sm:py-12">
+          <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-red-500 mx-auto mb-3 sm:mb-4" />
+          <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Error loading forms</h3>
+          <p className="text-muted-foreground text-sm sm:text-base">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Scouting Forms</h1>
-        <p className="text-muted-foreground">Browse and manage scouting forms from qualification matches</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Scouting Forms</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Browse and manage scouting forms from qualification matches
+        </p>
       </div>
 
-      <div className="mb-8 space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search by team number, match number, or scout name..."
+              placeholder="Search by team, match, or scout..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 text-sm sm:text-base"
             />
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Select value={filterBy} onValueChange={setFilterBy}>
-            <SelectTrigger className="sm:w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filter by" />
             </SelectTrigger>
             <SelectContent>
@@ -171,7 +177,7 @@ export default function FormsPage() {
           </Select>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="sm:w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -184,45 +190,52 @@ export default function FormsPage() {
       </div>
 
       {/* Results Summary */}
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground">
+      <div className="mb-4 sm:mb-6">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Showing {filteredForms.length} of {forms.length} forms
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
         {filteredForms.map((form) => (
           <Card key={form.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">
+            <CardHeader className="pb-3 sm:pb-6">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-base sm:text-lg truncate">
                     Team {form.teamNumber} - Match {form.matchNumber}
                   </CardTitle>
-                  <CardDescription className="font-medium text-foreground">Qualification Match</CardDescription>
+                  <CardDescription className="font-medium text-foreground text-sm sm:text-base">
+                    Qualification Match
+                  </CardDescription>
                 </div>
-                <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <Badge
+                  variant="default"
+                  className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs flex-shrink-0"
+                >
                   Completed
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <User className="h-4 w-4 mr-2" />
-                  {form.scouterName}
+            <CardContent className="space-y-3 sm:space-y-4 pt-0">
+              <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground">
+                <div className="flex items-center min-w-0 flex-1">
+                  <User className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                  <span className="truncate">{form.scouterName}</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-lg font-semibold text-foreground">{form.totalScore}</div>
+                <div className="text-right flex-shrink-0 ml-2">
+                  <div className="text-base sm:text-lg font-semibold text-foreground">{form.totalScore}</div>
                   <div className="text-xs text-muted-foreground">Total Score</div>
                 </div>
               </div>
 
-              {form.comments && <p className="text-sm text-muted-foreground line-clamp-2">{form.comments}</p>}
+              {form.comments && (
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{form.comments}</p>
+              )}
 
-              <Button asChild className="w-full" size="sm">
+              <Button asChild className="w-full text-sm sm:text-base" size="sm">
                 <Link href={`/forms/${form.id}`}>
-                  <Eye className="h-4 w-4 mr-2" />
+                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   View Details
                 </Link>
               </Button>
@@ -232,10 +245,10 @@ export default function FormsPage() {
       </div>
 
       {filteredForms.length === 0 && (
-        <div className="text-center py-12">
-          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No forms found</h3>
-          <p className="text-muted-foreground">Try adjusting your search criteria or filters</p>
+        <div className="text-center py-8 sm:py-12">
+          <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+          <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No forms found</h3>
+          <p className="text-muted-foreground text-sm sm:text-base">Try adjusting your search criteria or filters</p>
         </div>
       )}
     </div>

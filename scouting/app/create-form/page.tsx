@@ -109,47 +109,54 @@ export default function CreateFormPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Create Scouting Form</h1>
-        <p className="text-muted-foreground">Fill out the scouting data for a team's match performance</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create Scouting Form</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Fill out the scouting data for a team's match performance
+        </p>
       </div>
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-green-800 dark:text-green-200">Form submitted successfully!</p>
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+          <p className="text-green-800 dark:text-green-200 text-sm sm:text-base">Form submitted successfully!</p>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-red-800 dark:text-red-200">Error: {error}</p>
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-800 dark:text-red-200 text-sm sm:text-base">Error: {error}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Basic Information */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
                 Basic Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="scouterName">Scouter Name</Label>
+                <Label htmlFor="scouterName" className="text-sm sm:text-base">
+                  Scouter Name
+                </Label>
                 <Input
                   id="scouterName"
                   value={formData.scouterName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, scouterName: e.target.value }))}
                   required
                   disabled={loading}
+                  className="text-sm sm:text-base"
                 />
               </div>
               <div>
-                <Label htmlFor="matchNumber">Match Number</Label>
+                <Label htmlFor="matchNumber" className="text-sm sm:text-base">
+                  Match Number
+                </Label>
                 <Input
                   id="matchNumber"
                   type="number"
@@ -157,16 +164,20 @@ export default function CreateFormPage() {
                   onChange={(e) => setFormData((prev) => ({ ...prev, matchNumber: e.target.value }))}
                   required
                   disabled={loading}
+                  className="text-sm sm:text-base"
                 />
               </div>
-              <div>
-                <Label htmlFor="teamNumber">Team Number</Label>
+              <div className="sm:col-span-2 lg:col-span-1">
+                <Label htmlFor="teamNumber" className="text-sm sm:text-base">
+                  Team Number
+                </Label>
                 <Input
                   id="teamNumber"
                   value={formData.teamNumber}
                   onChange={(e) => setFormData((prev) => ({ ...prev, teamNumber: e.target.value }))}
                   required
                   disabled={loading}
+                  className="text-sm sm:text-base"
                 />
               </div>
             </CardContent>
@@ -174,15 +185,17 @@ export default function CreateFormPage() {
 
           {/* Autonomous Period */}
           <Card>
-            <CardHeader>
-              <CardTitle>Autonomous Period</CardTitle>
-              <CardDescription>Performance during the autonomous period</CardDescription>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-base sm:text-lg">Autonomous Period</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Performance during the autonomous period
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-6">
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label>Start Position</Label>
-                  <div className="flex gap-4">
+                  <Label className="text-sm sm:text-base">Start Position</Label>
+                  <div className="flex gap-3 sm:gap-4">
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
@@ -194,7 +207,9 @@ export default function CreateFormPage() {
                         className="w-4 h-4"
                         disabled={loading}
                       />
-                      <Label htmlFor="startSide">Side</Label>
+                      <Label htmlFor="startSide" className="text-sm sm:text-base">
+                        Side
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <input
@@ -207,7 +222,9 @@ export default function CreateFormPage() {
                         className="w-4 h-4"
                         disabled={loading}
                       />
-                      <Label htmlFor="startMiddle">Middle</Label>
+                      <Label htmlFor="startMiddle" className="text-sm sm:text-base">
+                        Middle
+                      </Label>
                     </div>
                   </div>
                 </div>
@@ -218,13 +235,17 @@ export default function CreateFormPage() {
                     onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, passedLine: !!checked }))}
                     disabled={loading}
                   />
-                  <Label htmlFor="passedLine">Passed Line</Label>
+                  <Label htmlFor="passedLine" className="text-sm sm:text-base">
+                    Passed Line
+                  </Label>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="l1CoralsAuto">L1 Corals</Label>
+                  <Label htmlFor="l1CoralsAuto" className="text-xs sm:text-sm">
+                    L1 Corals
+                  </Label>
                   <Input
                     id="l1CoralsAuto"
                     type="number"
@@ -232,10 +253,13 @@ export default function CreateFormPage() {
                     value={formData.l1CoralsAuto}
                     onChange={(e) => handleNumberChange("l1CoralsAuto", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="l2CoralsAuto">L2 Corals</Label>
+                  <Label htmlFor="l2CoralsAuto" className="text-xs sm:text-sm">
+                    L2 Corals
+                  </Label>
                   <Input
                     id="l2CoralsAuto"
                     type="number"
@@ -243,10 +267,13 @@ export default function CreateFormPage() {
                     value={formData.l2CoralsAuto}
                     onChange={(e) => handleNumberChange("l2CoralsAuto", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="l3CoralsAuto">L3 Corals</Label>
+                  <Label htmlFor="l3CoralsAuto" className="text-xs sm:text-sm">
+                    L3 Corals
+                  </Label>
                   <Input
                     id="l3CoralsAuto"
                     type="number"
@@ -254,10 +281,13 @@ export default function CreateFormPage() {
                     value={formData.l3CoralsAuto}
                     onChange={(e) => handleNumberChange("l3CoralsAuto", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="l4CoralsAuto">L4 Corals</Label>
+                  <Label htmlFor="l4CoralsAuto" className="text-xs sm:text-sm">
+                    L4 Corals
+                  </Label>
                   <Input
                     id="l4CoralsAuto"
                     type="number"
@@ -265,10 +295,13 @@ export default function CreateFormPage() {
                     value={formData.l4CoralsAuto}
                     onChange={(e) => handleNumberChange("l4CoralsAuto", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="netAuto">Net Auto</Label>
+                <div className="col-span-2 sm:col-span-1">
+                  <Label htmlFor="netAuto" className="text-xs sm:text-sm">
+                    Net Auto
+                  </Label>
                   <Input
                     id="netAuto"
                     type="number"
@@ -276,6 +309,7 @@ export default function CreateFormPage() {
                     value={formData.netAuto}
                     onChange={(e) => handleNumberChange("netAuto", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -284,14 +318,18 @@ export default function CreateFormPage() {
 
           {/* Teleoperated Period */}
           <Card>
-            <CardHeader>
-              <CardTitle>Teleoperated Period</CardTitle>
-              <CardDescription>Performance during the teleoperated period</CardDescription>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-base sm:text-lg">Teleoperated Period</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Performance during the teleoperated period
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="l1CoralsTele">L1 Corals</Label>
+                  <Label htmlFor="l1CoralsTele" className="text-xs sm:text-sm">
+                    L1 Corals
+                  </Label>
                   <Input
                     id="l1CoralsTele"
                     type="number"
@@ -299,10 +337,13 @@ export default function CreateFormPage() {
                     value={formData.l1CoralsTele}
                     onChange={(e) => handleNumberChange("l1CoralsTele", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="l2CoralsTele">L2 Corals</Label>
+                  <Label htmlFor="l2CoralsTele" className="text-xs sm:text-sm">
+                    L2 Corals
+                  </Label>
                   <Input
                     id="l2CoralsTele"
                     type="number"
@@ -310,10 +351,13 @@ export default function CreateFormPage() {
                     value={formData.l2CoralsTele}
                     onChange={(e) => handleNumberChange("l2CoralsTele", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="l3CoralsTele">L3 Corals</Label>
+                  <Label htmlFor="l3CoralsTele" className="text-xs sm:text-sm">
+                    L3 Corals
+                  </Label>
                   <Input
                     id="l3CoralsTele"
                     type="number"
@@ -321,10 +365,13 @@ export default function CreateFormPage() {
                     value={formData.l3CoralsTele}
                     onChange={(e) => handleNumberChange("l3CoralsTele", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="l4CoralsTele">L4 Corals</Label>
+                  <Label htmlFor="l4CoralsTele" className="text-xs sm:text-sm">
+                    L4 Corals
+                  </Label>
                   <Input
                     id="l4CoralsTele"
                     type="number"
@@ -332,10 +379,13 @@ export default function CreateFormPage() {
                     value={formData.l4CoralsTele}
                     onChange={(e) => handleNumberChange("l4CoralsTele", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="netTele">Net Tele</Label>
+                  <Label htmlFor="netTele" className="text-xs sm:text-sm">
+                    Net Tele
+                  </Label>
                   <Input
                     id="netTele"
                     type="number"
@@ -343,6 +393,21 @@ export default function CreateFormPage() {
                     value={formData.netTele}
                     onChange={(e) => handleNumberChange("netTele", e.target.value)}
                     disabled={loading}
+                    className="text-sm sm:text-base"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="processor" className="text-xs sm:text-sm">
+                    Processor
+                  </Label>
+                  <Input
+                    id="processor"
+                    type="number"
+                    min="0"
+                    value={formData.processor}
+                    onChange={(e) => handleNumberChange("processor", e.target.value)}
+                    disabled={loading}
+                    className="text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -351,27 +416,14 @@ export default function CreateFormPage() {
 
           {/* Endgame */}
           <Card>
-            <CardHeader>
-              <CardTitle>Endgame</CardTitle>
-              <CardDescription>Endgame performance and climbing</CardDescription>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-base sm:text-lg">Endgame</CardTitle>
+              <CardDescription className="text-sm sm:text-base">Endgame performance and climbing</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="processor">Processor Points</Label>
-                <Input
-                  id="processor"
-                  type="number"
-                  min="0"
-                  value={formData.processor}
-                  onChange={(e) => handleNumberChange("processor", e.target.value)}
-                  className="w-32"
-                  disabled={loading}
-                />
-              </div>
-
+            <CardContent className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
-                <Label>Climb Type</Label>
-                <div className="flex gap-4">
+                <Label className="text-sm sm:text-base">Climb Type</Label>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                   <div className="flex items-center space-x-2">
                     <input
                       type="radio"
@@ -383,7 +435,9 @@ export default function CreateFormPage() {
                       className="w-4 h-4"
                       disabled={loading}
                     />
-                    <Label htmlFor="noClimb">No Climb</Label>
+                    <Label htmlFor="noClimb" className="text-sm sm:text-base">
+                      No Climb
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -396,7 +450,9 @@ export default function CreateFormPage() {
                       className="w-4 h-4"
                       disabled={loading}
                     />
-                    <Label htmlFor="lowClimb">Low Climb</Label>
+                    <Label htmlFor="lowClimb" className="text-sm sm:text-base">
+                      Low Climb
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -409,7 +465,9 @@ export default function CreateFormPage() {
                       className="w-4 h-4"
                       disabled={loading}
                     />
-                    <Label htmlFor="highClimb">High Climb</Label>
+                    <Label htmlFor="highClimb" className="text-sm sm:text-base">
+                      High Climb
+                    </Label>
                   </div>
                 </div>
               </div>
@@ -418,28 +476,35 @@ export default function CreateFormPage() {
 
           {/* Comments */}
           <Card>
-            <CardHeader>
-              <CardTitle>Additional Notes</CardTitle>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-base sm:text-lg">Additional Notes</CardTitle>
             </CardHeader>
             <CardContent>
-              <Label htmlFor="comments">Comments</Label>
+              <Label htmlFor="comments" className="text-sm sm:text-base">
+                Comments
+              </Label>
               <Textarea
                 id="comments"
                 placeholder="Any additional observations or notes..."
                 value={formData.comments}
                 onChange={(e) => setFormData((prev) => ({ ...prev, comments: e.target.value }))}
                 maxLength={150}
-                className="mt-2"
+                className="mt-2 text-sm sm:text-base"
                 disabled={loading}
               />
-              <p className="text-sm text-muted-foreground mt-1">{formData.comments.length}/150 characters</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{formData.comments.length}/150 characters</p>
             </CardContent>
           </Card>
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            <Button type="submit" size="lg" className="flex items-center gap-2" disabled={loading}>
-              <Save className="h-4 w-4" />
+            <Button
+              type="submit"
+              size="lg"
+              className="flex items-center gap-2 w-full sm:w-auto text-sm sm:text-base"
+              disabled={loading}
+            >
+              <Save className="h-3 w-3 sm:h-4 sm:w-4" />
               {loading ? "Saving..." : "Save Form"}
             </Button>
           </div>

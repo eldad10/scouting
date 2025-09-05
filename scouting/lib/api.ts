@@ -1,15 +1,15 @@
+import { da } from "date-fns/locale";
+
 // Mock API service with simulated delays
 export class Team {
   teamNumber: string
   teamName: string
   ranking?: number
-
   constructor(teamNumber: string, teamName: string, ranking?: number){
     this.teamNumber = teamNumber;
     this.teamName = teamName;
-    this.ranking= ranking
+    this.ranking = ranking;
   }
-
 }
 
 export interface Form {
@@ -209,8 +209,8 @@ export const api = {
   // Teams API
   async getTeams(search?: string): Promise<Team[]> {
     await delay(200)
-    const x = await fetch("/api/getTeam");
-    return await <any>x.json();
+    const data = fetch("/api/getTeam");
+    return <any>(await data).json()
   },
 
   async getTeam(teamNumber: string): Promise<Team | null> {

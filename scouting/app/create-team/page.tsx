@@ -45,36 +45,40 @@ export default function CreateTeamPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Create New Team</h1>
-        <p className="text-muted-foreground">Add a new team to the competition database</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create New Team</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Add a new team to the competition database</p>
       </div>
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-green-800 dark:text-green-200">Team created successfully!</p>
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+          <p className="text-green-800 dark:text-green-200 text-sm sm:text-base">Team created successfully!</p>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-red-800 dark:text-red-200">Error: {error}</p>
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-800 dark:text-red-200 text-sm sm:text-base">Error: {error}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5" />
               Team Information
             </CardTitle>
-            <CardDescription>Enter the basic information for the new team</CardDescription>
+            <CardDescription className="text-sm sm:text-base">
+              Enter the basic information for the new team
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4">
             <div>
-              <Label htmlFor="teamNumber">Team Number</Label>
+              <Label htmlFor="teamNumber" className="text-sm sm:text-base">
+                Team Number
+              </Label>
               <Input
                 id="teamNumber"
                 value={teamData.teamNumber}
@@ -82,11 +86,14 @@ export default function CreateTeamPage() {
                 placeholder="e.g., 254"
                 required
                 disabled={loading}
+                className="text-sm sm:text-base"
               />
             </div>
 
             <div>
-              <Label htmlFor="teamName">Team Name</Label>
+              <Label htmlFor="teamName" className="text-sm sm:text-base">
+                Team Name
+              </Label>
               <Input
                 id="teamName"
                 value={teamData.teamName}
@@ -94,12 +101,17 @@ export default function CreateTeamPage() {
                 placeholder="e.g., The Cheesy Poofs"
                 required
                 disabled={loading}
+                className="text-sm sm:text-base"
               />
             </div>
 
-            <div className="flex justify-end pt-4">
-              <Button type="submit" className="flex items-center gap-2" disabled={loading}>
-                <Save className="h-4 w-4" />
+            <div className="flex justify-end pt-3 sm:pt-4">
+              <Button
+                type="submit"
+                className="flex items-center gap-2 w-full sm:w-auto text-sm sm:text-base"
+                disabled={loading}
+              >
+                <Save className="h-3 w-3 sm:h-4 sm:w-4" />
                 {loading ? "Creating..." : "Create Team"}
               </Button>
             </div>
