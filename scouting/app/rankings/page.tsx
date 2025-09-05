@@ -79,7 +79,7 @@ export default function RankingsPage() {
     switch (rankingType) {
       case "auto":
         aValue = a.autoAvg || 0
-        bValue = b.autoAvg || 0
+        bValue = b.teleopAvg || 0
         break
       case "teleop":
         aValue = a.teleopAvg || 0
@@ -146,36 +146,59 @@ export default function RankingsPage() {
       </div>
 
       {/* Top 3 Podium */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        {filteredRankings.slice(0, 3).map((team, index) => (
-          <Card
-            key={team.teamNumber}
-            className={`${index === 0 ? "sm:order-2" : index === 1 ? "sm:order-1" : "sm:order-3"} hover:shadow-lg transition-shadow`}
-          >
-            <CardHeader className="text-center pb-2 sm:pb-4">
-              <div className="flex items-center justify-center mb-1 sm:mb-2">{getRankIcon(team.ranking)}</div>
-              <CardTitle className="text-base sm:text-lg">#{team.ranking}</CardTitle>
-              <div className="text-xs sm:text-sm text-muted-foreground">Team {team.teamNumber}</div>
-            </CardHeader>
-            <CardContent className="text-center pt-0">
-              <h3 className="font-semibold text-foreground mb-2 text-sm sm:text-base truncate">{team.teamName}</h3>
-              <div className="space-y-1 text-xs sm:text-sm">
-                <div className="flex justify-between">
-                  <span>Auto Avg:</span>
-                  <span className="font-medium">{(team.autoAvg || 0).toFixed(1)}</span>
+      <div className="mb-4 sm:mb-8">
+        <div className="flex justify-center items-end gap-1 sm:gap-4 mb-4">
+          {/* Second Place */}
+          {filteredRankings[1] && (
+            <Card className="w-20 sm:w-32 hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center pb-1 sm:pb-2 p-2 sm:p-4">
+                <div className="flex items-center justify-center mb-1">
+                  <Medal className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
                 </div>
-                <div className="flex justify-between">
-                  <span>Teleop Avg:</span>
-                  <span className="font-medium">{(team.teleopAvg || 0).toFixed(1)}</span>
+                <CardTitle className="text-xs sm:text-sm">#2</CardTitle>
+                <div className="text-xs text-muted-foreground">Team {filteredRankings[1].teamNumber}</div>
+              </CardHeader>
+              <CardContent className="text-center pt-0 p-1 sm:p-4">
+                <h3 className="font-semibold text-xs sm:text-sm truncate mb-1">{filteredRankings[1].teamName}</h3>
+                <div className="text-xs font-medium">{(filteredRankings[1].overallAvg || 0).toFixed(1)}</div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* First Place - Elevated */}
+          {filteredRankings[0] && (
+            <Card className="w-24 sm:w-36 hover:shadow-lg transition-shadow transform -translate-y-2 sm:-translate-y-4">
+              <CardHeader className="text-center pb-1 sm:pb-2 p-2 sm:p-4">
+                <div className="flex items-center justify-center mb-1">
+                  <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
                 </div>
-                <div className="flex justify-between">
-                  <span>Overall Avg:</span>
-                  <span className="font-medium">{(team.overallAvg || 0).toFixed(1)}</span>
+                <CardTitle className="text-sm sm:text-base">#1</CardTitle>
+                <div className="text-xs text-muted-foreground">Team {filteredRankings[0].teamNumber}</div>
+              </CardHeader>
+              <CardContent className="text-center pt-0 p-1 sm:p-4">
+                <h3 className="font-semibold text-xs sm:text-sm truncate mb-1">{filteredRankings[0].teamName}</h3>
+                <div className="text-xs sm:text-sm font-medium">{(filteredRankings[0].overallAvg || 0).toFixed(1)}</div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Third Place */}
+          {filteredRankings[2] && (
+            <Card className="w-20 sm:w-32 hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center pb-1 sm:pb-2 p-2 sm:p-4">
+                <div className="flex items-center justify-center mb-1">
+                  <Award className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <CardTitle className="text-xs sm:text-sm">#3</CardTitle>
+                <div className="text-xs text-muted-foreground">Team {filteredRankings[2].teamNumber}</div>
+              </CardHeader>
+              <CardContent className="text-center pt-0 p-1 sm:p-4">
+                <h3 className="font-semibold text-xs sm:text-sm truncate mb-1">{filteredRankings[2].teamName}</h3>
+                <div className="text-xs font-medium">{(filteredRankings[2].overallAvg || 0).toFixed(1)}</div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
 
       <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4">
@@ -197,116 +220,116 @@ export default function RankingsPage() {
         <CardHeader className="pb-3 sm:pb-6">
           <CardTitle className="text-base sm:text-lg">Team Rankings</CardTitle>
         </CardHeader>
-        <CardContent className="p-0 sm:p-6">
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12 sm:w-16 px-2 sm:px-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("ranking")}
-                      className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
-                    >
-                      Rank
-                      {getSortIcon("ranking")}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="px-2 sm:px-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("teamNumber")}
-                      className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
-                    >
-                      Team
-                      {getSortIcon("teamNumber")}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="px-1 sm:px-4 hidden sm:table-cell">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("autoAvg")}
-                      className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
-                    >
-                      Auto
-                      {getSortIcon("autoAvg")}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="px-1 sm:px-4 hidden sm:table-cell">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("teleopAvg")}
-                      className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
-                    >
-                      Teleop
-                      {getSortIcon("teleopAvg")}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="px-1 sm:px-4 hidden md:table-cell">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("endgameAvg")}
-                      className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
-                    >
-                      Endgame
-                      {getSortIcon("endgameAvg")}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="px-2 sm:px-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("overallAvg")}
-                      className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
-                    >
-                      Overall
-                      {getSortIcon("overallAvg")}
-                    </Button>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRankings.map((team) => (
-                  <TableRow key={team.teamNumber} className="hover:bg-muted/50">
-                    <TableCell className="font-medium px-2 sm:px-4">
-                      <div className="flex items-center space-x-1 sm:space-x-2">
-                        {getRankIcon(team.ranking)}
-                        <span className="text-xs sm:text-sm">{team.ranking}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 sm:px-4">
-                      <Link href={`/statistics?team=${team.teamNumber}`} className="hover:underline">
-                        <div>
-                          <div className="font-medium text-xs sm:text-sm">Team {team.teamNumber}</div>
-                          <div className="text-xs text-muted-foreground truncate max-w-[100px] sm:max-w-none">
-                            {team.teamName}
-                          </div>
-                        </div>
-                      </Link>
-                    </TableCell>
-                    <TableCell className="font-medium px-1 sm:px-4 text-xs sm:text-sm hidden sm:table-cell">
-                      {(team.autoAvg || 0).toFixed(1)}
-                    </TableCell>
-                    <TableCell className="font-medium px-1 sm:px-4 text-xs sm:text-sm hidden sm:table-cell">
-                      {(team.teleopAvg || 0).toFixed(1)}
-                    </TableCell>
-                    <TableCell className="font-medium px-1 sm:px-4 text-xs sm:text-sm hidden md:table-cell">
-                      {(team.endgameAvg || 0).toFixed(1)}
-                    </TableCell>
-                    <TableCell className="font-medium px-2 sm:px-4">
-                      <Badge variant="outline" className="font-medium text-xs sm:text-sm">
-                        {(team.overallAvg || 0).toFixed(1)}
-                      </Badge>
-                    </TableCell>
+            <div className="min-w-[500px] sm:min-w-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16 px-2 sticky left-0 bg-background">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("ranking")}
+                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                      >
+                        Rank
+                        {getSortIcon("ranking")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="px-2 min-w-[120px] sticky left-16 bg-background">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("teamNumber")}
+                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                      >
+                        Team
+                        {getSortIcon("teamNumber")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="px-2 min-w-[80px]">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("autoAvg")}
+                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                      >
+                        Auto
+                        {getSortIcon("autoAvg")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="px-2 min-w-[80px]">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("teleopAvg")}
+                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                      >
+                        Teleop
+                        {getSortIcon("teleopAvg")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="px-2 min-w-[80px]">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("endgameAvg")}
+                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                      >
+                        Endgame
+                        {getSortIcon("endgameAvg")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="px-2 min-w-[80px]">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("overallAvg")}
+                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                      >
+                        Overall
+                        {getSortIcon("overallAvg")}
+                      </Button>
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredRankings.map((team) => (
+                    <TableRow key={team.teamNumber} className="hover:bg-muted/50">
+                      <TableCell className="font-medium px-2 sticky left-0 bg-background">
+                        <div className="flex items-center space-x-1">
+                          {getRankIcon(team.ranking)}
+                          <span className="text-xs sm:text-sm">{team.ranking}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2 sticky left-16 bg-background">
+                        <Link href={`/statistics?team=${team.teamNumber}`} className="hover:underline">
+                          <div>
+                            <div className="font-medium text-xs sm:text-sm">Team {team.teamNumber}</div>
+                            <div className="text-xs text-muted-foreground truncate max-w-[100px]">{team.teamName}</div>
+                          </div>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                        {(team.autoAvg || 0).toFixed(1)}
+                      </TableCell>
+                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                        {(team.teleopAvg || 0).toFixed(1)}
+                      </TableCell>
+                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                        {(team.endgameAvg || 0).toFixed(1)}
+                      </TableCell>
+                      <TableCell className="font-medium px-2">
+                        <Badge variant="outline" className="font-medium text-xs sm:text-sm">
+                          {(team.overallAvg || 0).toFixed(1)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
