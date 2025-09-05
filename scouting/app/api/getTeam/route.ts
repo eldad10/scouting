@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 export async function GET() {
   
-  const client = new Client({ connectionString: process.env.CONNECTION_STRING });
+  const client = new Client({ connectionString: "postgres://postgres:adspostgres@db.kpsaecoauyhpzpfasdly.supabase.co:5432/postgres" });
   await client.connect();
 
   const result = await client.query(API.getTeams());
