@@ -1,7 +1,10 @@
 import { Client } from "pg";
 import API from '../postgres/queryGenerator'
 import { Team } from "@/lib/api";
+import dotenv from "dotenv";
+dotenv.config();
 export async function GET() {
+  
   const client = new Client({ connectionString: process.env.CONNECTION_STRING });
   await client.connect();
 
