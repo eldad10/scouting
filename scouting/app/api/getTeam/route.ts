@@ -2,10 +2,11 @@ import { createClient } from "@supabase/supabase-js";
 import API from '../postgres/queryGenerator'
 import { Team } from "@/lib/api";
 import dotenv from "dotenv";
+import {key, url} from './const'
 dotenv.config();
 export async function GET() {
   dotenv.config();
-  const client = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!,process.env.EXPO_PUBLIC_SUPABASE_KEY! );
+  const client = createClient(url,key);
 
    const {data, error} = await client.from('teams').select("*");
 
