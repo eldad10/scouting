@@ -1,0 +1,318 @@
+// Mock API service with simulated delays
+export class Team {
+  teamNumber: string
+  teamName: string
+  ranking?: number
+
+  constructor(teamNumber: string, teamName: string, ranking?: number){
+    this.teamNumber = teamNumber;
+    this.teamName = teamName;
+    this.ranking= ranking
+  }
+
+}
+
+export interface Form {
+  id: string
+  scouterName: string
+  matchNumber: number
+  teamNumber: string
+  startPosition: "side" | "middle"
+  passedLine: boolean
+  l1CoralsAuto: number
+  l2CoralsAuto: number
+  l3CoralsAuto: number
+  l4CoralsAuto: number
+  netAuto: number
+  l1CoralsTele: number
+  l2CoralsTele: number
+  l3CoralsTele: number
+  l4CoralsTele: number
+  netTele: number
+  processor: number
+  highClimb: boolean
+  lowClimb: boolean
+  comments: string
+}
+
+export interface RankingData {
+  teamNumber: string
+  teamName: string
+  autoAvg: number
+  teleopAvg: number
+  endgameAvg: number
+  overallAvg: number
+  ranking: number
+}
+
+// Simulate API delay
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Mock data
+const mockTeams: Team[] = [
+  { teamNumber: "1234", teamName: "Robo Warriors", ranking: 1 },
+  { teamNumber: "5678", teamName: "Steel Titans", ranking: 2 },
+  { teamNumber: "9012", teamName: "Circuit Breakers", ranking: 3 },
+  { teamNumber: "3456", teamName: "Gear Heads", ranking: 4 },
+  { teamNumber: "7890", teamName: "Bot Builders", ranking: 5 },
+  { teamNumber: "2468", teamName: "Mech Masters", ranking: 6 },
+  { teamNumber: "1357", teamName: "Code Crushers", ranking: 7 },
+  { teamNumber: "8642", teamName: "Tech Titans", ranking: 8 },
+]
+
+const mockForms: Form[] = [
+  {
+    id: "1",
+    scouterName: "Alex Johnson",
+    matchNumber: 1,
+    teamNumber: "1234",
+    startPosition: "side",
+    passedLine: true,
+    l1CoralsAuto: 3,
+    l2CoralsAuto: 2,
+    l3CoralsAuto: 1,
+    l4CoralsAuto: 0,
+    netAuto: 2,
+    l1CoralsTele: 8,
+    l2CoralsTele: 6,
+    l3CoralsTele: 4,
+    l4CoralsTele: 2,
+    netTele: 5,
+    processor: 3,
+    highClimb: true,
+    lowClimb: false,
+    comments: "Strong autonomous performance, excellent climbing ability",
+  },
+  {
+    id: "2",
+    scouterName: "Sarah Chen",
+    matchNumber: 2,
+    teamNumber: "5678",
+    startPosition: "middle",
+    passedLine: true,
+    l1CoralsAuto: 2,
+    l2CoralsAuto: 3,
+    l3CoralsAuto: 2,
+    l4CoralsAuto: 1,
+    netAuto: 3,
+    l1CoralsTele: 7,
+    l2CoralsTele: 5,
+    l3CoralsTele: 3,
+    l4CoralsTele: 1,
+    netTele: 4,
+    processor: 2,
+    highClimb: false,
+    lowClimb: true,
+    comments: "Consistent scorer, good teleop control",
+  },
+  {
+    id: "3",
+    scouterName: "Mike Rodriguez",
+    matchNumber: 3,
+    teamNumber: "9012",
+    startPosition: "side",
+    passedLine: false,
+    l1CoralsAuto: 1,
+    l2CoralsAuto: 1,
+    l3CoralsAuto: 0,
+    l4CoralsAuto: 0,
+    netAuto: 1,
+    l1CoralsTele: 6,
+    l2CoralsTele: 4,
+    l3CoralsTele: 2,
+    l4CoralsTele: 0,
+    netTele: 3,
+    processor: 1,
+    highClimb: false,
+    lowClimb: false,
+    comments: "Struggled in autonomous, decent teleop performance",
+  },
+]
+
+const mockRankings: RankingData[] = [
+  {
+    teamNumber: "1234",
+    teamName: "Robo Warriors",
+    autoAvg: 24.5,
+    teleopAvg: 67.8,
+    endgameAvg: 15.2,
+    overallAvg: 107.5,
+    ranking: 1,
+  },
+  {
+    teamNumber: "5678",
+    teamName: "Steel Titans",
+    autoAvg: 22.1,
+    teleopAvg: 65.3,
+    endgameAvg: 12.8,
+    overallAvg: 100.2,
+    ranking: 2,
+  },
+  {
+    teamNumber: "9012",
+    teamName: "Circuit Breakers",
+    autoAvg: 18.7,
+    teleopAvg: 58.9,
+    endgameAvg: 14.1,
+    overallAvg: 91.7,
+    ranking: 3,
+  },
+  {
+    teamNumber: "3456",
+    teamName: "Gear Heads",
+    autoAvg: 20.3,
+    teleopAvg: 55.2,
+    endgameAvg: 11.5,
+    overallAvg: 87.0,
+    ranking: 4,
+  },
+  {
+    teamNumber: "7890",
+    teamName: "Bot Builders",
+    autoAvg: 16.8,
+    teleopAvg: 52.4,
+    endgameAvg: 13.2,
+    overallAvg: 82.4,
+    ranking: 5,
+  },
+  {
+    teamNumber: "2468",
+    teamName: "Mech Masters",
+    autoAvg: 15.2,
+    teleopAvg: 48.7,
+    endgameAvg: 10.8,
+    overallAvg: 74.7,
+    ranking: 6,
+  },
+  {
+    teamNumber: "1357",
+    teamName: "Code Crushers",
+    autoAvg: 14.1,
+    teleopAvg: 45.3,
+    endgameAvg: 9.2,
+    overallAvg: 68.6,
+    ranking: 7,
+  },
+  {
+    teamNumber: "8642",
+    teamName: "Tech Titans",
+    autoAvg: 12.5,
+    teleopAvg: 42.1,
+    endgameAvg: 8.5,
+    overallAvg: 63.1,
+    ranking: 8,
+  },
+]
+
+// API functions
+export const api = {
+  // Teams API
+  async getTeams(search?: string): Promise<Team[]> {
+    await delay(200)
+    const x = await fetch("/api/getTeam");
+    return await <any>x.json();
+  },
+
+  async getTeam(teamNumber: string): Promise<Team | null> {
+    await delay(200)
+    return mockTeams.find((team) => team.teamNumber === teamNumber) || null
+  },
+
+  async createTeam(teamData: Omit<Team, "ranking">): Promise<Team> {
+    await delay(200)
+    const newTeam = { ...teamData, ranking: mockTeams.length + 1 }
+    mockTeams.push(newTeam)
+    return newTeam
+  },
+
+  // Forms API
+  async getForms(filters?: { matchNumber?: string; teamNumber?: string; scouterName?: string }): Promise<Form[]> {
+    await delay(200)
+    let filteredForms = [...mockForms]
+
+    if (filters?.matchNumber) {
+      filteredForms = filteredForms.filter((form) => form.matchNumber.toString().includes(filters.matchNumber!))
+    }
+    if (filters?.teamNumber) {
+      filteredForms = filteredForms.filter((form) => form.teamNumber.includes(filters.teamNumber!))
+    }
+    if (filters?.scouterName) {
+      filteredForms = filteredForms.filter((form) =>
+        form.scouterName.toLowerCase().includes(filters.scouterName!.toLowerCase()),
+      )
+    }
+
+    return filteredForms
+  },
+
+  async getForm(id: string): Promise<Form | null> {
+    await delay(200)
+    return mockForms.find((form) => form.id === id) || null
+  },
+
+  async getFormById(id: string): Promise<Form | null> {
+    return this.getForm(id)
+  },
+
+  async createForm(formData: Omit<Form, "id">): Promise<Form> {
+    await delay(200)
+    const newForm = { ...formData, id: (mockForms.length + 1).toString() }
+    mockForms.push(newForm)
+    return newForm
+  },
+
+  // Rankings API
+  async getRankings(sortBy: "auto" | "teleop" | "endgame" | "overall" = "overall"): Promise<RankingData[]> {
+    await delay(200)
+    const sorted = [...mockRankings].sort((a, b) => {
+      switch (sortBy) {
+        case "auto":
+          return b.autoAvg - a.autoAvg
+        case "teleop":
+          return b.teleopAvg - a.teleopAvg
+        case "endgame":
+          return b.endgameAvg - a.endgameAvg
+        default:
+          return b.overallAvg - a.overallAvg
+      }
+    })
+    return sorted
+  },
+
+  // Statistics API
+  async getTeamStatistics(teamNumber: string): Promise<any> {
+    await delay(200)
+    const teamForms = mockForms.filter((form) => form.teamNumber === teamNumber)
+
+    if (teamForms.length === 0) return null
+
+    // Calculate statistics from forms
+    const coralData = teamForms.map((form, index) => ({
+      match: form.matchNumber,
+      L1: form.l1CoralsAuto + form.l1CoralsTele,
+      L2: form.l2CoralsAuto + form.l2CoralsTele,
+      L3: form.l3CoralsAuto + form.l3CoralsTele,
+      L4: form.l4CoralsAuto + form.l4CoralsTele,
+    }))
+
+    const autoVsTeleop = teamForms.map((form) => ({
+      match: form.matchNumber,
+      auto: form.l1CoralsAuto + form.l2CoralsAuto + form.l3CoralsAuto + form.l4CoralsAuto + form.netAuto,
+      teleop: form.l1CoralsTele + form.l2CoralsTele + form.l3CoralsTele + form.l4CoralsTele + form.netTele,
+    }))
+
+    const climbingData = [
+      { type: "High Climb", count: teamForms.filter((f) => f.highClimb).length },
+      { type: "Low Climb", count: teamForms.filter((f) => f.lowClimb).length },
+      { type: "No Climb", count: teamForms.filter((f) => !f.highClimb && !f.lowClimb).length },
+    ]
+
+    return {
+      coralData,
+      autoVsTeleop,
+      climbingData,
+      totalMatches: teamForms.length,
+      avgProcessor: teamForms.reduce((sum, f) => sum + f.processor, 0) / teamForms.length,
+    }
+  },
+}
