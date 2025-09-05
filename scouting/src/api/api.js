@@ -15,4 +15,19 @@ export default class API{
         const query = this.queryGenerator.insertTeam(team);
         this.postgresManager.query(query);
     }
+
+    async searchTeam(prefix = null){
+        const query = this.queryGenerator(this.searchTeam(prefix));
+        this.postgresManager.query(query)
+    }
+
+    async searchForms(filters = {}) {
+        const query = this.queryGenerator(this.searchForms(filters));
+        this.postgresManager.query(query)
+    }
+
+    async rankTeams(rankField = 'overall_points') {
+        const query = this.queryGenerator(this.rankTeams(rankField));
+        this.postgresManager.query(query)
+    }
 }

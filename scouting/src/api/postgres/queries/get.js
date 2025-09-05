@@ -1,5 +1,5 @@
 //GET TEAMS by prefix
-export function searchTeam (prefix = null){
+export function searchTeam (prefix){
     return `
     SELECT * FROM Teams
     ${prefix? `WHERE teamnumber LIKE '${prefix}%' OR teamname LIKE '${prefix}%'` : ''}
@@ -11,7 +11,7 @@ export function searchTeam (prefix = null){
  * @param {Object} filters - { filterTeam, filterMatch, filterName }
  * @returns {string} SQL query
  */
-export function searchForms(filters = {}) {
+export function searchForms(filters) {
   const conditions = [];
 
   // Filter by team prefix
@@ -40,4 +40,11 @@ export function searchForms(filters = {}) {
   `;
 
   return query;
+}
+
+export function getRankings (rankField = 'overall_points'){
+  return `
+  select Rank() over (ORDER BY ${rankField} DESC) AS rank, teamnumber, overall_points, auto_points, teleop_points, climb_points
+  from rankings;
+  `
 }

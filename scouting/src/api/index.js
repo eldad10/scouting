@@ -14,27 +14,27 @@ const start = async ()=>{
     const formData = {
     ScouterName: 'Alice',
     MatchNumber: 1,
-    TeamNumber: '1',
-    StartPosition: true,
+    TeamNumber: '2',
+    StartPosition: false,
     PassedLine: true,
     L1CoralsAuto: 3,
-    L2CoralsAuto: 2,
+    L2CoralsAuto: 1,
     L3CoralsAuto: 3,
-    L4CoralsAuto: 2,
+    L4CoralsAuto: 0,
     NetAuto: 5,
-    L1CoralsTele: 3,
+    L1CoralsTele: 1,
     L2CoralsTele: 2,
-    L3CoralsTele: 3,
+    L3CoralsTele: 7,
     L4CoralsTele: 2,
     NetTele: 5,
-    Processor: 101,
-    HighClimb: true,
-    LowClimb: false,
+    Processor: 12,
+    HighClimb: false,
+    LowClimb: true,
     Comments: 'Good match'
     };
     const newTeam = {
-    TeamNumber: '1',
-    TeamName: 'Red Rockets'
+    TeamNumber: '2',
+    TeamName: 'Blue Rockets'
     };
     await api.insertTeam(newTeam);
     await api.insertForm(formData);
