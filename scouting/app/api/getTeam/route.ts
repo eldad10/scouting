@@ -1,18 +1,17 @@
-import { Client } from "pg";
+import { createClient } from "@supabase/supabase-js";
 import API from '../postgres/queryGenerator'
 import { Team } from "@/lib/api";
 import dotenv from "dotenv";
 dotenv.config();
 export async function GET() {
   
-  const client = new Client({ connectionString: "postgres://postgres:adspostgres@db.kpsaecoauyhpzpfasdly.supabase.co:5432/postgres" });
-  await client.connect();
+  const client = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!,process.env.EXPO_PUBLIC_SUPABASE_KEY! );
 
-  const result = await client.query(API.getTeams());
-  const transformed = result.rows.map(row=>{
+   const {data, error} = await client.from('teams').select("*");
+  const transformed = data?.map(row=>{
     return new Team(row.teamnumber,  row.teamname)
   })
-  await client.end();
+  console.log(transformed)
 
   return new Response(JSON.stringify(transformed), {
     status: 200,
