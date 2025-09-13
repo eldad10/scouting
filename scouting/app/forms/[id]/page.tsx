@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { User, ArrowLeft, Trophy, Target, Zap, Clock } from "lucide-react"
 import Link from "next/link"
-import { api } from "@/lib/api"
+import { api, Form } from "@/lib/api"
 
 interface FormDetailPageProps {
   params: {
@@ -16,7 +16,7 @@ interface FormDetailPageProps {
 }
 
 export default function FormDetailPage({ params }: FormDetailPageProps) {
-  const [form, setForm] = useState(null)
+  const [form, setForm] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -29,7 +29,7 @@ export default function FormDetailPage({ params }: FormDetailPageProps) {
           notFound()
         }
         setForm(formData)
-      } catch (err) {
+      } catch (err:any) {
         setError(err.message)
       } finally {
         setLoading(false)

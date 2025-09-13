@@ -6,7 +6,6 @@ export async function GET() {
   if(!process.env.EXPO_PUBLIC_SUPABASE_URL){
     dotenv.config();
   }
-  console.log(`ENV: ${process.env.EXPO_PUBLIC_SUPABASE_URL}`)
   const client = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_KEY!);
 
    const {data, error} = await client.from('teams').select("*");

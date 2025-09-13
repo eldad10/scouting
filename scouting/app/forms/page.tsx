@@ -8,13 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import { api } from "@/lib/api"
+import { api, Form } from "@/lib/api"
 
 export default function FormsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterBy, setFilterBy] = useState("all")
   const [sortBy, setSortBy] = useState("match")
-  const [forms, setForms] = useState([])
+  const [forms, setForms] = useState<Form[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -24,7 +24,7 @@ export default function FormsPage() {
         setLoading(true)
         const formsData = await api.getForms()
         setForms(formsData)
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message)
       } finally {
         setLoading(false)
@@ -39,14 +39,14 @@ export default function FormsPage() {
       if (searchTerm.trim()) {
         try {
           setLoading(true)
-          const filters = {}
+          const filters: any = {}
           if (filterBy === "team") filters.teamNumber = searchTerm
           else if (filterBy === "match") filters.matchNumber = searchTerm
           else if (filterBy === "scout") filters.scouterName = searchTerm
 
           const searchResults = await api.getForms(filters)
           setForms(searchResults)
-        } catch (err) {
+        } catch (err: any) {
           setError(err.message)
         } finally {
           setLoading(false)
@@ -198,7 +198,7 @@ export default function FormsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
         {filteredForms.map((form) => (
-          <Card key={form.id} className="hover:shadow-lg transition-shadow">
+          <Card key={`${form.teamNumber}-${form.matchNumber}`} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3 sm:pb-6">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -234,7 +234,7 @@ export default function FormsPage() {
               )}
 
               <Button asChild className="w-full text-sm sm:text-base" size="sm">
-                <Link href={`/forms/${form.id}`}>
+                <Link href={`/forms/${`${form.teamNumber}-${form.matchNumber}`}`}>
                   <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   View Details
                 </Link>

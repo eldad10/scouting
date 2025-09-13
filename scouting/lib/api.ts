@@ -1,4 +1,3 @@
-import { da } from "date-fns/locale";
 
 // Mock API service with simulated delays
 export class Team {
@@ -12,8 +11,29 @@ export class Team {
   }
 }
 
-export interface Form {
-  id: string
+export interface FormInput {
+  scoutername: string
+  matchnumber: number
+  teamnumber: string
+  startposition: "side" | "middle"
+  passedline: boolean
+  l1coralsauto: number
+  l2coralsauto: number
+  l3coralsauto: number
+  l4coralsauto: number
+  netauto: number
+  l1coralstele: number
+  l2coralstele: number
+  l3coralstele: number
+  l4coralstele: number
+  nettele: number
+  processor: number
+  highclimb: boolean
+  lowclimb: boolean
+  comments: string
+}
+
+export class Form {
   scouterName: string
   matchNumber: number
   teamNumber: string
@@ -33,7 +53,30 @@ export interface Form {
   highClimb: boolean
   lowClimb: boolean
   comments: string
+
+  constructor(input: FormInput) {
+    this.scouterName = input.scoutername
+    this.matchNumber = input.matchnumber
+    this.teamNumber = input.teamnumber
+    this.startPosition = input.startposition
+    this.passedLine = input.passedline
+    this.l1CoralsAuto = input.l1coralsauto
+    this.l2CoralsAuto = input.l2coralsauto
+    this.l3CoralsAuto = input.l3coralsauto
+    this.l4CoralsAuto = input.l4coralsauto
+    this.netAuto = input.netauto
+    this.l1CoralsTele = input.l1coralstele
+    this.l2CoralsTele = input.l2coralstele
+    this.l3CoralsTele = input.l3coralstele
+    this.l4CoralsTele = input.l4coralstele
+    this.netTele = input.nettele
+    this.processor = input.processor
+    this.highClimb = input.highclimb
+    this.lowClimb = input.lowclimb
+    this.comments = input.comments
+  }
 }
+
 
 export interface RankingData {
   teamNumber: string
@@ -62,7 +105,6 @@ const mockTeams: Team[] = [
 
 const mockForms: Form[] = [
   {
-    id: "1",
     scouterName: "Alex Johnson",
     matchNumber: 1,
     teamNumber: "1234",
@@ -84,7 +126,6 @@ const mockForms: Form[] = [
     comments: "Strong autonomous performance, excellent climbing ability",
   },
   {
-    id: "2",
     scouterName: "Sarah Chen",
     matchNumber: 2,
     teamNumber: "5678",
@@ -106,7 +147,6 @@ const mockForms: Form[] = [
     comments: "Consistent scorer, good teleop control",
   },
   {
-    id: "3",
     scouterName: "Mike Rodriguez",
     matchNumber: 3,
     teamNumber: "9012",
@@ -209,7 +249,7 @@ export const api = {
   // Teams API
   async getTeams(search?: string): Promise<Team[]> {
     await delay(200)
-    const data = fetch("/api/getTeam");
+    const data = fetch("/api/getTeams");
     return <any>(await data).json()
   },
 
@@ -228,7 +268,7 @@ export const api = {
   // Forms API
   async getForms(filters?: { matchNumber?: string; teamNumber?: string; scouterName?: string }): Promise<Form[]> {
     await delay(200)
-    let filteredForms = [...mockForms]
+    let filteredForms: Form[] = await (await fetch("/api/getForms")).json()
 
     if (filters?.matchNumber) {
       filteredForms = filteredForms.filter((form) => form.matchNumber.toString().includes(filters.matchNumber!))
@@ -247,11 +287,23 @@ export const api = {
 
   async getForm(id: string): Promise<Form | null> {
     await delay(200)
-    return mockForms.find((form) => form.id === id) || null
+    const [teamNumber, matchNumber] = id.split("-");
+    const body = {teamNumber, matchNumber}
+    
+    const res: Form| null = await (
+  await fetch("/api/getForms", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  })
+).json();
+return res;
   },
 
   async getFormById(id: string): Promise<Form | null> {
-    return this.getForm(id)
+    return await this.getForm(id)
   },
 
   async createForm(formData: Omit<Form, "id">): Promise<Form> {
