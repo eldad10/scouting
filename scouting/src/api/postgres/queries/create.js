@@ -103,3 +103,18 @@ select
 from forms
 group by teamnumber;
 `
+
+export const searchTeamFunction = `
+create or replace function get_teams_with_rank()
+returns table (
+  teamname varchar,
+  teamnumber varchar,
+  rank int
+)
+language sql
+as $$
+  select t.teamname, t.teamnumber, r.rank
+  from teams t
+  join rankings r on r.teamnumber = t.teamnumber;
+$$;
+`

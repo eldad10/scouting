@@ -1,0 +1,6 @@
+{
+  "/forms/page": "app/forms/page.js",
+  "/teams/page": "app/teams/page.js",
+  "/api/getForms/route": "app/api/getForms/route.js",
+  "/forms/[id]/page": "app/forms/[id]/page.js"
+}
