@@ -12,8 +12,7 @@ import { api, Form } from "@/lib/api"
 
 export default function FormsPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterBy, setFilterBy] = useState("all")
-  const [sortBy, setSortBy] = useState("match")
+  const [filterBy, setFilterBy] = useState("team")
   const [forms, setForms] = useState<Form[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -34,33 +33,6 @@ export default function FormsPage() {
     fetchForms()
   }, [])
 
-  useEffect(() => {
-    const searchForms = async () => {
-      if (searchTerm.trim()) {
-        try {
-          setLoading(true)
-          const filters: any = {}
-          if (filterBy === "team") filters.teamNumber = searchTerm
-          else if (filterBy === "match") filters.matchNumber = searchTerm
-          else if (filterBy === "scout") filters.scouterName = searchTerm
-
-          const searchResults = await api.getForms(filters)
-          setForms(searchResults)
-        } catch (err: any) {
-          setError(err.message)
-        } finally {
-          setLoading(false)
-        }
-      } else {
-        const allForms = await api.getForms()
-        setForms(allForms)
-      }
-    }
-
-    const debounceTimer = setTimeout(searchForms, 300)
-    return () => clearTimeout(debounceTimer)
-  }, [searchTerm, filterBy])
-
   const filteredForms = forms
     .map((form) => ({
       ...form,
@@ -78,32 +50,18 @@ export default function FormsPage() {
         form.processor,
     }))
     .filter((form) => {
-      if (filterBy === "all") {
-        return (
-          form.teamNumber.includes(searchTerm) ||
-          form.matchNumber.toString().includes(searchTerm) ||
-          form.scouterName.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      } else if (filterBy === "team") {
-        return form.teamNumber.includes(searchTerm)
+      if (!searchTerm.trim()) return true
+
+      const searchLower = searchTerm.toLowerCase()
+
+      if (filterBy === "team") {
+        return form.teamNumber.toLowerCase().includes(searchLower)
       } else if (filterBy === "match") {
         return form.matchNumber.toString().includes(searchTerm)
       } else if (filterBy === "scout") {
-        return form.scouterName.toLowerCase().includes(searchTerm.toLowerCase())
+        return form.scouterName.toLowerCase().includes(searchLower)
       }
-      return true
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "match":
-          return a.matchNumber - b.matchNumber
-        case "team":
-          return Number.parseInt(a.teamNumber) - Number.parseInt(b.teamNumber)
-        case "score":
-          return b.totalScore - a.totalScore
-        default:
-          return a.matchNumber - b.matchNumber
-      }
+      return form.teamNumber.toLowerCase().includes(searchLower)
     })
 
   if (loading) {
@@ -151,39 +109,25 @@ export default function FormsPage() {
       </div>
 
       <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
-        <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search by team, match, or scout..."
+              placeholder={`Search by ${filterBy === "team" ? "team number" : filterBy === "match" ? "match number" : "scout name"}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 text-sm sm:text-base"
             />
           </div>
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Select value={filterBy} onValueChange={setFilterBy}>
             <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Filter by" />
+              <SelectValue placeholder="Search by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Fields</SelectItem>
               <SelectItem value="team">Team Number</SelectItem>
               <SelectItem value="match">Match Number</SelectItem>
               <SelectItem value="scout">Scout Name</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="match">Match Number</SelectItem>
-              <SelectItem value="team">Team Number</SelectItem>
-              <SelectItem value="score">Total Score</SelectItem>
             </SelectContent>
           </Select>
         </div>

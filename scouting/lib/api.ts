@@ -267,7 +267,6 @@ export const api = {
 
   // Forms API
   async getForms(filters?: { matchNumber?: string; teamNumber?: string; scouterName?: string }): Promise<Form[]> {
-    await delay(200)
     let filteredForms: Form[] = await (await fetch("/api/getForms")).json()
 
     if (filters?.matchNumber) {
@@ -286,7 +285,6 @@ export const api = {
   },
 
   async getForm(id: string): Promise<Form | null> {
-    await delay(200)
     const [teamNumber, matchNumber] = id.split("-");
     const body = {teamNumber, matchNumber}
     

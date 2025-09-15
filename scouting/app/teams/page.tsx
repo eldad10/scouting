@@ -11,7 +11,7 @@ import { api, type Team } from "@/lib/api"
 
 export default function TeamsPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("number")
+  const [filterBy, setFilterBy] = useState("all")
   const [teams, setTeams] = useState<Team[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -56,18 +56,26 @@ export default function TeamsPage() {
     return () => clearTimeout(debounceTimer)
   }, [searchTerm])
 
-  const filteredTeams = teams.sort((a, b) => {
-    switch (sortBy) {
-      case "number":
-        return Number.parseInt(a.teamNumber) - Number.parseInt(b.teamNumber)
-      case "name":
-        return a.teamName.localeCompare(b.teamName)
-      case "ranking":
-        return (a.ranking || 999) - (b.ranking || 999)
-      default:
-        return Number.parseInt(a.teamNumber) - Number.parseInt(b.teamNumber)
-    }
-  })
+  const filteredTeams = teams
+    .filter((team) => {
+      switch (filterBy) {
+        case "top5":
+          return team.ranking && team.ranking <= 5
+        case "top10":
+          return team.ranking && team.ranking <= 10
+        case "ranked":
+          return team.ranking !== undefined && team.ranking !== null
+        case "unranked":
+          return !team.ranking
+        case "all":
+        default:
+          return true
+      }
+    })
+    .sort((a, b) => {
+      // Default sort by team number
+      return Number.parseInt(a.teamNumber) - Number.parseInt(b.teamNumber)
+    })
 
   // Function to get ranking badge color
   const getRankingBadgeColor = (ranking: number) => {
@@ -102,14 +110,16 @@ export default function TeamsPage() {
         </div>
 
         <div className="flex flex-col gap-3 sm:gap-4">
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select value={filterBy} onValueChange={setFilterBy}>
             <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder="Filter teams" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="number">Team Number</SelectItem>
-              <SelectItem value="name">Team Name</SelectItem>
-              <SelectItem value="ranking">Ranking</SelectItem>
+              <SelectItem value="all">All Teams</SelectItem>
+              <SelectItem value="top5">Top 5 Teams</SelectItem>
+              <SelectItem value="top10">Top 10 Teams</SelectItem>
+              <SelectItem value="ranked">Ranked Teams</SelectItem>
+              <SelectItem value="unranked">Unranked Teams</SelectItem>
             </SelectContent>
           </Select>
         </div>
