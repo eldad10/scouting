@@ -8,10 +8,10 @@ export async function GET() {
   }
   const client = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_KEY!);
 
-   const {data, error} = await client.from('teams').select("*");
+   const {data, error} = await client.rpc("get_teams_with_rank");
 
-  const transformed = data?.map(row=>{
-    return new Team(row.teamnumber,  row.teamname)
+  const transformed = data?.map((row: any)=>{
+    return new Team(row.teamnumber,  row.teamname, row.rank)
   })
   return new Response(JSON.stringify(transformed), {
     status: 200,

@@ -15,7 +15,7 @@ export interface FormInput {
   scoutername: string
   matchnumber: number
   teamnumber: string
-  startposition: "side" | "middle"
+  startposition: boolean
   passedline: boolean
   l1coralsauto: number
   l2coralsauto: number
@@ -37,7 +37,7 @@ export class Form {
   scouterName: string
   matchNumber: number
   teamNumber: string
-  startPosition: "side" | "middle"
+  startPosition: "Side" | "Middle"
   passedLine: boolean
   l1CoralsAuto: number
   l2CoralsAuto: number
@@ -53,12 +53,16 @@ export class Form {
   highClimb: boolean
   lowClimb: boolean
   comments: string
+  autoScore?: number = 0
+  teleopScore?: number = 0
+  endgameScore?: number = 0
+  totalScore?: number = 0
 
   constructor(input: FormInput) {
     this.scouterName = input.scoutername
     this.matchNumber = input.matchnumber
     this.teamNumber = input.teamnumber
-    this.startPosition = input.startposition
+    this.startPosition = input.startposition? "Side": "Middle"
     this.passedLine = input.passedline
     this.l1CoralsAuto = input.l1coralsauto
     this.l2CoralsAuto = input.l2coralsauto
@@ -74,6 +78,25 @@ export class Form {
     this.highClimb = input.highclimb
     this.lowClimb = input.lowclimb
     this.comments = input.comments
+    this.autoScore = 
+    (this.passedLine ? 2 : 0) +
+    (this.l1CoralsAuto || 0) * 3 +
+    (this.l2CoralsAuto || 0) * 4 +
+    (this.l3CoralsAuto || 0) * 6 +
+    (this.l4CoralsAuto || 0) * 7 +
+    (this.netAuto || 0) * 4
+
+    this.teleopScore =
+    (this.l1CoralsTele || 0) * 2 +
+    (this.l2CoralsTele || 0) * 3 +
+    (this.l3CoralsTele || 0) * 4 +
+    (this.l4CoralsTele || 0) * 5 +
+    (this.netTele || 0) * 4 +
+    (this.processor || 0) * 2
+
+    this.endgameScore = (this.highClimb ? 6 : 0) + (this.lowClimb ? 12 : 0)
+
+    this.totalScore = this.autoScore + this.teleopScore + this.endgameScore
   }
 }
 
@@ -108,7 +131,7 @@ const mockForms: Form[] = [
     scouterName: "Alex Johnson",
     matchNumber: 1,
     teamNumber: "1234",
-    startPosition: "side",
+    startPosition: "Side",
     passedLine: true,
     l1CoralsAuto: 3,
     l2CoralsAuto: 2,
@@ -129,7 +152,7 @@ const mockForms: Form[] = [
     scouterName: "Sarah Chen",
     matchNumber: 2,
     teamNumber: "5678",
-    startPosition: "middle",
+    startPosition: "Middle",
     passedLine: true,
     l1CoralsAuto: 2,
     l2CoralsAuto: 3,
@@ -150,7 +173,7 @@ const mockForms: Form[] = [
     scouterName: "Mike Rodriguez",
     matchNumber: 3,
     teamNumber: "9012",
-    startPosition: "side",
+    startPosition: "Side",
     passedLine: false,
     l1CoralsAuto: 1,
     l2CoralsAuto: 1,

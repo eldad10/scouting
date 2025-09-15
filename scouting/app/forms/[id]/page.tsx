@@ -65,26 +65,8 @@ export default function FormDetailPage({ params }: FormDetailPageProps) {
     notFound()
   }
 
-  const autoScore =
-    (form.passedLine ? 2 : 0) +
-    (form.l1CoralsAuto || 0) * 3 +
-    (form.l2CoralsAuto || 0) * 4 +
-    (form.l3CoralsAuto || 0) * 6 +
-    (form.l4CoralsAuto || 0) * 7 +
-    (form.netAuto || 0) * 4
-
-  const teleopScore =
-    (form.l1CoralsTele || 0) * 2 +
-    (form.l2CoralsTele || 0) * 3 +
-    (form.l3CoralsTele || 0) * 4 +
-    (form.l4CoralsTele || 0) * 5 +
-    (form.netTele || 0) * 4 +
-    (form.processor || 0) * 2
-
-  const endgameScore = (form.highClimb ? 6 : 0) + (form.lowClimb ? 12 : 0)
-
-  const totalScore = autoScore + teleopScore + endgameScore
-
+const {autoScore, teleopScore, endgameScore, totalScore} = form
+console.log({autoScore, teleopScore, endgameScore, totalScore});
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="mb-4 sm:mb-6">
@@ -157,8 +139,8 @@ export default function FormDetailPage({ params }: FormDetailPageProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-4 text-xs sm:text-sm">
                   <div className="flex justify-between py-1">
                     <span>Start Position:</span>
-                    <span className={form.startPosition ? "text-green-600" : "text-red-600"}>
-                      {form.startPosition ? "Yes" : "No"}
+                    <span className={form.startPosition==="Side" ? "text-green-600" : "text-red-600"}>
+                      {form.startPosition}
                     </span>
                   </div>
                   <div className="flex justify-between py-1">

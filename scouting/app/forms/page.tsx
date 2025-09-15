@@ -33,23 +33,7 @@ export default function FormsPage() {
     fetchForms()
   }, [])
 
-  const filteredForms = forms
-    .map((form) => ({
-      ...form,
-      totalScore:
-        form.l1CoralsAuto +
-        form.l2CoralsAuto +
-        form.l3CoralsAuto +
-        form.l4CoralsAuto +
-        form.netAuto +
-        form.l1CoralsTele +
-        form.l2CoralsTele +
-        form.l3CoralsTele +
-        form.l4CoralsTele +
-        form.netTele +
-        form.processor,
-    }))
-    .filter((form) => {
+  const filteredForms = forms.filter((form) => {
       if (!searchTerm.trim()) return true
 
       const searchLower = searchTerm.toLowerCase()

@@ -30,34 +30,15 @@ export default function TeamsPage() {
     fetchTeams()
   }, [])
 
-  useEffect(() => {
-    const searchTeams = async () => {
-      if (searchTerm.trim()) {
-        setLoading(true)
-        try {
-          const searchResults = await api.getTeams(searchTerm)
-          setTeams(searchResults)
-        } catch (error) {
-          console.error("Failed to search teams:", error)
-        } finally {
-          setLoading(false)
-        }
-      } else {
-        // If search is empty, fetch all teams
-        const fetchAllTeams = async () => {
-          const allTeams = await api.getTeams()
-          setTeams(allTeams)
-        }
-        fetchAllTeams()
-      }
-    }
-
-    const debounceTimer = setTimeout(searchTeams, 300)
-    return () => clearTimeout(debounceTimer)
-  }, [searchTerm])
-
   const filteredTeams = teams
     .filter((team) => {
+      const matchesSearch =
+        searchTerm.trim() === "" ||
+        team.teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        team.teamNumber.toLowerCase().includes(searchTerm.toLowerCase())
+
+      if (!matchesSearch) return false
+
       switch (filterBy) {
         case "top5":
           return team.ranking && team.ranking <= 5
@@ -73,11 +54,9 @@ export default function TeamsPage() {
       }
     })
     .sort((a, b) => {
-      // Default sort by team number
       return Number.parseInt(a.teamNumber) - Number.parseInt(b.teamNumber)
     })
 
-  // Function to get ranking badge color
   const getRankingBadgeColor = (ranking: number) => {
     if (ranking === 1) return "bg-yellow-500 text-yellow-900"
     if (ranking === 2) return "bg-gray-400 text-gray-900"
