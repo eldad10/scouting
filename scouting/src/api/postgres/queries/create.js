@@ -34,74 +34,77 @@ FOREIGN KEY (TeamNumber) REFERENCES Teams(TeamNumber)
 export const createRankingView = `
 create or replace view Rankings as
 select
-    forms.teamnumber as teamnumber,teamname,
+    r.*,
+    rank() over (order by overall_points desc) as rank
+from (
+    select
+        forms.teamnumber as teamnumber,teamname,
 
-    -- averages of raw fields
-    round(avg(cast(passedLine as int)), 3) as avg_passed_line,
-    round(avg(cast(L1CoralsAuto as int)), 3) as avg_l1_corals_auto,
-    round(avg(cast(L2CoralsAuto as int)), 3) as avg_l2_corals_auto,
-    round(avg(cast(L3CoralsAuto as int)), 3) as avg_l3_corals_auto,
-    round(avg(cast(L4CoralsAuto as int)), 3) as avg_l4_corals_auto,
-    round(avg(cast(NetAuto as int)), 3) as avg_net_auto,
+        -- averages of raw fields
+        round(avg(cast(passedLine as int)), 3) as avg_passed_line,
+        round(avg(cast(L1CoralsAuto as int)), 3) as avg_l1_corals_auto,
+        round(avg(cast(L2CoralsAuto as int)), 3) as avg_l2_corals_auto,
+        round(avg(cast(L3CoralsAuto as int)), 3) as avg_l3_corals_auto,
+        round(avg(cast(L4CoralsAuto as int)), 3) as avg_l4_corals_auto,
+        round(avg(cast(NetAuto as int)), 3) as avg_net_auto,
 
-    round(avg(cast(L1CoralsTele as int)), 3) as avg_l1_corals_tele,
-    round(avg(cast(L2CoralsTele as int)), 3) as avg_l2_corals_tele,
-    round(avg(cast(L3CoralsTele as int)), 3) as avg_l3_corals_tele,
-    round(avg(cast(L4CoralsTele as int)), 3) as avg_l4_corals_tele,
-    round(avg(cast(NetTele as int)), 3) as avg_net_tele,
-    round(avg(cast(Processor as int)), 3) as avg_processor,
+        round(avg(cast(L1CoralsTele as int)), 3) as avg_l1_corals_tele,
+        round(avg(cast(L2CoralsTele as int)), 3) as avg_l2_corals_tele,
+        round(avg(cast(L3CoralsTele as int)), 3) as avg_l3_corals_tele,
+        round(avg(cast(L4CoralsTele as int)), 3) as avg_l4_corals_tele,
+        round(avg(cast(NetTele as int)), 3) as avg_net_tele,
+        round(avg(cast(Processor as int)), 3) as avg_processor,
 
-    round(avg(cast(HighClimb as int)), 3) as avg_high_climb,
-    round(avg(cast(LowClimb as int)), 3) as avg_low_climb,
+        round(avg(cast(HighClimb as int)), 3) as avg_high_climb,
+        round(avg(cast(LowClimb as int)), 3) as avg_low_climb,
 
-    round(avg(cast(StartPosition as int)), 3) as avg_start_position,
+        round(avg(cast(StartPosition as int)), 3) as avg_start_position,
 
-    -- points totals (built from averages above)
-    round(
-        (avg(cast(PassedLine as int)) * 2) +
-        (avg(cast(L1CoralsAuto as int)) * 3) +
-        (avg(cast(L2CoralsAuto as int)) * 4) +
-        (avg(cast(L3CoralsAuto as int)) * 6) +
-        (avg(cast(L4CoralsAuto as int)) * 7) +
-        (avg(cast(NetAuto as int)) * 4), 3
-    ) as auto_points,
+        -- points totals
+        round(
+            (avg(cast(PassedLine as int)) * 2) +
+            (avg(cast(L1CoralsAuto as int)) * 3) +
+            (avg(cast(L2CoralsAuto as int)) * 4) +
+            (avg(cast(L3CoralsAuto as int)) * 6) +
+            (avg(cast(L4CoralsAuto as int)) * 7) +
+            (avg(cast(NetAuto as int)) * 4), 3
+        ) as auto_points,
 
-    round(
-        (avg(cast(L1CoralsTele as int)) * 2) +
-        (avg(cast(L2CoralsTele as int)) * 3) +
-        (avg(cast(L3CoralsTele as int)) * 4) +
-        (avg(cast(L4CoralsTele as int)) * 5) +
-        (avg(cast(NetTele as int)) * 4) +
-        (avg(cast(Processor as int)) * 2), 3
-    ) as teleop_points,
+        round(
+            (avg(cast(L1CoralsTele as int)) * 2) +
+            (avg(cast(L2CoralsTele as int)) * 3) +
+            (avg(cast(L3CoralsTele as int)) * 4) +
+            (avg(cast(L4CoralsTele as int)) * 5) +
+            (avg(cast(NetTele as int)) * 4) +
+            (avg(cast(Processor as int)) * 2), 3
+        ) as teleop_points,
 
-    round(
-        (avg(cast(HighClimb as int)) * 6) +
-        (avg(cast(LowClimb as int)) * 12), 3
-    ) as climb_points,
+        round(
+            (avg(cast(HighClimb as int)) * 6) +
+            (avg(cast(LowClimb as int)) * 12), 3
+        ) as climb_points,
 
-    -- overall = sum of the three category points
-    round(
-        ((avg(cast(PassedLine as int)) * 2) +
-         (avg(cast(L1CoralsAuto as int)) * 3) +
-         (avg(cast(L2CoralsAuto as int)) * 4) +
-         (avg(cast(L3CoralsAuto as int)) * 6) +
-         (avg(cast(L4CoralsAuto as int)) * 7) +
-         (avg(cast(NetAuto as int)) * 4)) +
+        round(
+            ((avg(cast(PassedLine as int)) * 2) +
+             (avg(cast(L1CoralsAuto as int)) * 3) +
+             (avg(cast(L2CoralsAuto as int)) * 4) +
+             (avg(cast(L3CoralsAuto as int)) * 6) +
+             (avg(cast(L4CoralsAuto as int)) * 7) +
+             (avg(cast(NetAuto as int)) * 4)) +
 
-        ((avg(cast(L1CoralsTele as int)) * 2) +
-         (avg(cast(L2CoralsTele as int)) * 3) +
-         (avg(cast(L3CoralsTele as int)) * 4) +
-         (avg(cast(L4CoralsTele as int)) * 5) +
-         (avg(cast(NetTele as int)) * 4) +
-         (avg(cast(Processor as int)) * 2)) +
+            ((avg(cast(L1CoralsTele as int)) * 2) +
+             (avg(cast(L2CoralsTele as int)) * 3) +
+             (avg(cast(L3CoralsTele as int)) * 4) +
+             (avg(cast(L4CoralsTele as int)) * 5) +
+             (avg(cast(NetTele as int)) * 4) +
+             (avg(cast(Processor as int)) * 2)) +
 
-        ((avg(cast(HighClimb as int)) * 6) +
-         (avg(cast(LowClimb as int)) * 12)), 3
-    ) as overall_points
-
+            ((avg(cast(HighClimb as int)) * 6) +
+             (avg(cast(LowClimb as int)) * 12)), 3
+        ) as overall_points
 from forms join teams on forms.teamnumber = teams.teamnumber
-group by forms.teamnumber, teamname;
+group by forms.teamnumber, teamname
+) r;
 `
 
 export const searchTeamFunction = `
