@@ -100,6 +100,16 @@ export class Form {
   }
 }
 
+export interface RankingDataInput {
+  teamNumber: string
+  teamName: string
+  autoAvg: number
+  teleopAvg: number
+  endgameAvg: number
+  overallAvg: number
+  overallRank: number
+}
+
 
 export interface RankingData {
   teamNumber: string
@@ -108,7 +118,7 @@ export interface RankingData {
   teleopAvg: number
   endgameAvg: number
   overallAvg: number
-  ranking: number
+  overallRank: number
 }
 
 // Simulate API delay
@@ -200,7 +210,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 67.8,
     endgameAvg: 15.2,
     overallAvg: 107.5,
-    ranking: 1,
+    overallRank: 1,
   },
   {
     teamNumber: "5678",
@@ -209,7 +219,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 65.3,
     endgameAvg: 12.8,
     overallAvg: 100.2,
-    ranking: 2,
+    overallRank: 2,
   },
   {
     teamNumber: "9012",
@@ -218,7 +228,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 58.9,
     endgameAvg: 14.1,
     overallAvg: 91.7,
-    ranking: 3,
+    overallRank: 3,
   },
   {
     teamNumber: "3456",
@@ -227,7 +237,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 55.2,
     endgameAvg: 11.5,
     overallAvg: 87.0,
-    ranking: 4,
+    overallRank: 4,
   },
   {
     teamNumber: "7890",
@@ -236,7 +246,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 52.4,
     endgameAvg: 13.2,
     overallAvg: 82.4,
-    ranking: 5,
+    overallRank: 5,
   },
   {
     teamNumber: "2468",
@@ -245,7 +255,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 48.7,
     endgameAvg: 10.8,
     overallAvg: 74.7,
-    ranking: 6,
+    overallRank: 6,
   },
   {
     teamNumber: "1357",
@@ -254,7 +264,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 45.3,
     endgameAvg: 9.2,
     overallAvg: 68.6,
-    ranking: 7,
+    overallRank: 7,
   },
   {
     teamNumber: "8642",
@@ -263,7 +273,7 @@ const mockRankings: RankingData[] = [
     teleopAvg: 42.1,
     endgameAvg: 8.5,
     overallAvg: 63.1,
-    ranking: 8,
+    overallRank: 8,
   },
 ]
 
