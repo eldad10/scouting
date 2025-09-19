@@ -34,7 +34,7 @@ FOREIGN KEY (TeamNumber) REFERENCES Teams(TeamNumber)
 export const createRankingView = `
 create or replace view Rankings as
 select
-    teamnumber,
+    forms.teamnumber as teamnumber,teamname,
 
     -- averages of raw fields
     round(avg(cast(passedLine as int)), 3) as avg_passed_line,
@@ -100,8 +100,8 @@ select
          (avg(cast(LowClimb as int)) * 12)), 3
     ) as overall_points
 
-from forms
-group by teamnumber;
+from forms join teams on forms.teamnumber = teams.teamnumber
+group by forms.teamnumber, teamname;
 `
 
 export const searchTeamFunction = `
