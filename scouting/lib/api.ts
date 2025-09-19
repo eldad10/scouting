@@ -101,17 +101,17 @@ export class Form {
 }
 
 export interface RankingDataInput {
-  teamNumber: string
-  teamName: string
-  autoAvg: number
-  teleopAvg: number
-  endgameAvg: number
-  overallAvg: number
-  overallRank: number
+  teamnumber: string
+  teamname: string
+  auto_points: number
+  teleop_points: number
+  climb_points: number
+  overall_points: number
+  rank: number
 }
 
 
-export interface RankingData {
+export class RankingData {
   teamNumber: string
   teamName: string
   autoAvg: number
@@ -119,6 +119,16 @@ export interface RankingData {
   endgameAvg: number
   overallAvg: number
   overallRank: number
+
+  constructor(rankInput: RankingDataInput){
+    this.teamNumber = rankInput.teamnumber;
+    this.teamName = rankInput.teamname;
+    this.autoAvg = rankInput.auto_points;
+    this.teleopAvg = rankInput.teleop_points;
+    this.endgameAvg = rankInput.climb_points;
+    this.overallAvg = rankInput.overall_points;
+    this.overallRank = rankInput.rank;
+  }
 }
 
 // Simulate API delay
@@ -281,7 +291,6 @@ const mockRankings: RankingData[] = [
 export const api = {
   // Teams API
   async getTeams(search?: string): Promise<Team[]> {
-    await delay(200)
     const data = fetch("/api/getTeams");
     return <any>(await data).json()
   },
@@ -346,8 +355,9 @@ return res;
 
   // Rankings API
   async getRankings(sortBy: "auto" | "teleop" | "endgame" | "overall" = "overall"): Promise<RankingData[]> {
-    await delay(200)
-    const sorted = [...mockRankings].sort((a, b) => {
+    let rankings: RankingData[] = await (await fetch("/api/getRankings")).json()
+    console.dir(rankings,{depth: null});
+    const sorted = [...rankings].sort((a, b) => {
       switch (sortBy) {
         case "auto":
           return b.autoAvg - a.autoAvg
