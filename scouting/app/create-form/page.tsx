@@ -10,46 +10,87 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { FileText, Save } from "lucide-react"
-import { api } from "@/lib/api"
+import { api, type Form } from "@/lib/api"
+
+interface FormState {
+  scouterName: string
+  matchNumber: string
+  teamNumber: string
+  startPosition: "Side" | "Middle"
+  passedLine: boolean
+  l1CoralsAuto: number
+  l2CoralsAuto: number
+  l3CoralsAuto: number
+  l4CoralsAuto: number
+  netAuto: number
+  l1CoralsTele: number
+  l2CoralsTele: number
+  l3CoralsTele: number
+  l4CoralsTele: number
+  netTele: number
+  processor: number
+  climbType: "none" | "low" | "high"
+  comments: string
+}
+
+const INITIAL_FORM_STATE: FormState = {
+  scouterName: "",
+  matchNumber: "",
+  teamNumber: "",
+  startPosition: "Middle",
+  passedLine: false,
+  l1CoralsAuto: 0,
+  l2CoralsAuto: 0,
+  l3CoralsAuto: 0,
+  l4CoralsAuto: 0,
+  netAuto: 0,
+  l1CoralsTele: 0,
+  l2CoralsTele: 0,
+  l3CoralsTele: 0,
+  l4CoralsTele: 0,
+  netTele: 0,
+  processor: 0,
+  climbType: "none",
+  comments: "",
+}
 
 export default function CreateFormPage() {
-  const [formData, setFormData] = useState({
-    scouterName: "",
-    matchNumber: "",
-    teamNumber: "",
-    startPosition: "",
-    passedLine: false,
-    l1CoralsAuto: 0,
-    l2CoralsAuto: 0,
-    l3CoralsAuto: 0,
-    l4CoralsAuto: 0,
-    netAuto: 0,
-    l1CoralsTele: 0,
-    l2CoralsTele: 0,
-    l3CoralsTele: 0,
-    l4CoralsTele: 0,
-    netTele: 0,
-    processor: 0,
-    climbType: "",
-    comments: "",
-  })
-
+  const [formData, setFormData] = useState<FormState>(INITIAL_FORM_STATE)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const validateForm = (): string | null => {
+    if (!formData.scouterName.trim()) return "Scouter name is required"
+    if (!formData.matchNumber.trim()) return "Match number is required"
+    if (!formData.teamNumber.trim()) return "Team number is required"
+
+    const matchNum = Number.parseInt(formData.matchNumber, 10)
+    if (isNaN(matchNum) || matchNum < 1) {
+      return "Match number must be a valid positive number"
+    }
+
+    return null
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
+      return
+    }
 
     try {
       setLoading(true)
       setError(null)
 
-      const formPayload = {
-        scouterName: formData.scouterName,
-        matchNumber: Number.parseInt(formData.matchNumber),
-        teamNumber: formData.teamNumber,
-        startPosition: formData.startPosition === "side",
+      const formPayload: Form = {
+        scouterName: formData.scouterName.trim(),
+        matchNumber: Number.parseInt(formData.matchNumber, 10),
+        teamNumber: formData.teamNumber.trim(),
+        startPosition: formData.startPosition,
         passedLine: formData.passedLine,
         l1CoralsAuto: formData.l1CoralsAuto,
         l2CoralsAuto: formData.l2CoralsAuto,
@@ -64,47 +105,36 @@ export default function CreateFormPage() {
         processor: formData.processor,
         highClimb: formData.climbType === "high",
         lowClimb: formData.climbType === "low",
-        comments: formData.comments,
+        comments: formData.comments.trim(),
       }
 
       await api.createForm(formPayload)
       setSuccess(true)
 
-      // Reset form after successful submission
-      setFormData({
-        scouterName: "",
-        matchNumber: "",
-        teamNumber: "",
-        startPosition: "",
-        passedLine: false,
-        l1CoralsAuto: 0,
-        l2CoralsAuto: 0,
-        l3CoralsAuto: 0,
-        l4CoralsAuto: 0,
-        netAuto: 0,
-        l1CoralsTele: 0,
-        l2CoralsTele: 0,
-        l3CoralsTele: 0,
-        l4CoralsTele: 0,
-        netTele: 0,
-        processor: 0,
-        climbType: "",
-        comments: "",
-      })
+      setFormData({ ...INITIAL_FORM_STATE })
 
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
-    } catch (err) {
-      setError(err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred"
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleNumberChange = (field: string, value: string) => {
+  const handleNumberChange = (field: keyof FormState, value: string) => {
+    const numValue = Math.max(0, Number.parseInt(value, 10) || 0)
     setFormData((prev) => ({
       ...prev,
-      [field]: Math.max(0, Number.parseInt(value) || 0),
+      [field]: numValue,
+    }))
+  }
+
+  const handleInputChange = (field: keyof FormState, value: string | boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
     }))
   }
 
@@ -147,7 +177,7 @@ export default function CreateFormPage() {
                 <Input
                   id="scouterName"
                   value={formData.scouterName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, scouterName: e.target.value }))}
+                  onChange={(e) => handleInputChange("scouterName", e.target.value)}
                   required
                   disabled={loading}
                   className="text-sm sm:text-base"
@@ -160,8 +190,9 @@ export default function CreateFormPage() {
                 <Input
                   id="matchNumber"
                   type="number"
+                  min="1"
                   value={formData.matchNumber}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, matchNumber: e.target.value }))}
+                  onChange={(e) => handleInputChange("matchNumber", e.target.value)}
                   required
                   disabled={loading}
                   className="text-sm sm:text-base"
@@ -174,7 +205,7 @@ export default function CreateFormPage() {
                 <Input
                   id="teamNumber"
                   value={formData.teamNumber}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, teamNumber: e.target.value }))}
+                  onChange={(e) => handleInputChange("teamNumber", e.target.value)}
                   required
                   disabled={loading}
                   className="text-sm sm:text-base"
@@ -192,7 +223,7 @@ export default function CreateFormPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Label className="text-sm sm:text-base">Start Position</Label>
                   <div className="flex gap-3 sm:gap-4">
@@ -202,8 +233,8 @@ export default function CreateFormPage() {
                         id="startSide"
                         name="startPosition"
                         value="side"
-                        checked={formData.startPosition === "side"}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, startPosition: e.target.value }))}
+                        checked={formData.startPosition === "Side"}
+                        onChange={(e) => handleInputChange("startPosition", e.target.value as "Side" | "Middle")}
                         className="w-4 h-4"
                         disabled={loading}
                       />
@@ -217,8 +248,8 @@ export default function CreateFormPage() {
                         id="startMiddle"
                         name="startPosition"
                         value="middle"
-                        checked={formData.startPosition === "middle"}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, startPosition: e.target.value }))}
+                        checked={formData.startPosition === "Middle"}
+                        onChange={(e) => handleInputChange("startPosition", e.target.value as "Side" | "Middle")}
                         className="w-4 h-4"
                         disabled={loading}
                       />
@@ -228,16 +259,20 @@ export default function CreateFormPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="passedLine"
-                    checked={formData.passedLine}
-                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, passedLine: !!checked }))}
-                    disabled={loading}
-                  />
-                  <Label htmlFor="passedLine" className="text-sm sm:text-base">
-                    Passed Line
-                  </Label>
+                <div className="space-y-2">
+                  <Label className="text-sm sm:text-base">Autonomous Actions</Label>
+                  <div className="flex items-center space-x-2 p-3 border border-border rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
+                    <Checkbox
+                      id="passedLine"
+                      checked={formData.passedLine}
+                      onCheckedChange={(checked) => handleInputChange("passedLine", !!checked)}
+                      disabled={loading}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Label htmlFor="passedLine" className="text-sm sm:text-base cursor-pointer flex-1">
+                      Passed Line
+                    </Label>
+                  </div>
                 </div>
               </div>
 
@@ -431,7 +466,7 @@ export default function CreateFormPage() {
                       name="climbType"
                       value="none"
                       checked={formData.climbType === "none"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, climbType: e.target.value }))}
+                      onChange={(e) => handleInputChange("climbType", e.target.value as "none" | "low" | "high")}
                       className="w-4 h-4"
                       disabled={loading}
                     />
@@ -446,7 +481,7 @@ export default function CreateFormPage() {
                       name="climbType"
                       value="low"
                       checked={formData.climbType === "low"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, climbType: e.target.value }))}
+                      onChange={(e) => handleInputChange("climbType", e.target.value as "none" | "low" | "high")}
                       className="w-4 h-4"
                       disabled={loading}
                     />
@@ -461,7 +496,7 @@ export default function CreateFormPage() {
                       name="climbType"
                       value="high"
                       checked={formData.climbType === "high"}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, climbType: e.target.value }))}
+                      onChange={(e) => handleInputChange("climbType", e.target.value as "none" | "low" | "high")}
                       className="w-4 h-4"
                       disabled={loading}
                     />
@@ -487,7 +522,7 @@ export default function CreateFormPage() {
                 id="comments"
                 placeholder="Any additional observations or notes..."
                 value={formData.comments}
-                onChange={(e) => setFormData((prev) => ({ ...prev, comments: e.target.value }))}
+                onChange={(e) => handleInputChange("comments", e.target.value)}
                 maxLength={150}
                 className="mt-2 text-sm sm:text-base"
                 disabled={loading}

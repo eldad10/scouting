@@ -2,12 +2,20 @@ import { createClient } from "@supabase/supabase-js";
 import { Form } from "@/lib/api";
 import dotenv from "dotenv";
 import { NextRequest } from "next/server";
+export const dynamic = "force-dynamic";
 export async function GET() {
 
   if(!process.env.EXPO_PUBLIC_SUPABASE_URL){
     dotenv.config();
   }
-  const client = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_KEY!);
+  const client = createClient(
+    process.env.EXPO_PUBLIC_SUPABASE_URL!,
+     process.env.EXPO_PUBLIC_SUPABASE_KEY!,
+      {
+      global: {
+        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" }),
+      },
+    });
 
    const {data, error} = await client.from('forms').select("*");
 
@@ -16,7 +24,7 @@ export async function GET() {
   })
   return new Response(JSON.stringify(transformed), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store", },
   });
 }
 
@@ -28,7 +36,12 @@ export async function POST(req: NextRequest) {
 
   const client = createClient(
     process.env.EXPO_PUBLIC_SUPABASE_URL!,
-    process.env.EXPO_PUBLIC_SUPABASE_KEY!
+    process.env.EXPO_PUBLIC_SUPABASE_KEY!,
+       {
+      global: {
+        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" }),
+      },
+    }
   )
 
   try {

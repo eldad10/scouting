@@ -1,3 +1,4 @@
+import { te } from "date-fns/locale";
 
 // Mock API service with simulated delays
 export class Team {
@@ -11,7 +12,7 @@ export class Team {
   }
 }
 
-export interface FormInput {
+export class FormInput {
   scoutername: string
   matchnumber: number
   teamnumber: string
@@ -31,6 +32,28 @@ export interface FormInput {
   highclimb: boolean
   lowclimb: boolean
   comments: string
+
+  constructor(formInClient: any){
+      this.scoutername = formInClient.scouterName
+      this.matchnumber = formInClient.matchNumber
+      this.teamnumber  = formInClient.teamNumber
+      this.startposition = formInClient.startPosition === "Side"
+      this.passedline = formInClient.passedLine
+      this.l1coralsauto = formInClient.l1CoralsAuto
+      this.l2coralsauto = formInClient.l2CoralsAuto
+      this.l3coralsauto = formInClient.l3CoralsAuto
+      this.l4coralsauto = formInClient.l4CoralsAuto
+      this.netauto = formInClient.netAuto
+      this.l1coralstele = formInClient.l1CoralsTele
+      this.l2coralstele = formInClient.l2CoralsTele
+      this.l3coralstele = formInClient.l3CoralsTele
+      this.l4coralstele = formInClient.l4CoralsTele
+      this.nettele = formInClient.netTele
+      this.processor = formInClient.processor
+      this.highclimb = formInClient.highClimb
+      this.lowclimb = formInClient.lowClimb
+      this.comments = formInClient.comments
+  }
 }
 
 export class Form {
@@ -131,162 +154,6 @@ export class RankingData {
   }
 }
 
-// Simulate API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-// Mock data
-const mockTeams: Team[] = [
-  { teamNumber: "1234", teamName: "Robo Warriors", ranking: 1 },
-  { teamNumber: "5678", teamName: "Steel Titans", ranking: 2 },
-  { teamNumber: "9012", teamName: "Circuit Breakers", ranking: 3 },
-  { teamNumber: "3456", teamName: "Gear Heads", ranking: 4 },
-  { teamNumber: "7890", teamName: "Bot Builders", ranking: 5 },
-  { teamNumber: "2468", teamName: "Mech Masters", ranking: 6 },
-  { teamNumber: "1357", teamName: "Code Crushers", ranking: 7 },
-  { teamNumber: "8642", teamName: "Tech Titans", ranking: 8 },
-]
-
-const mockForms: Form[] = [
-  {
-    scouterName: "Alex Johnson",
-    matchNumber: 1,
-    teamNumber: "1234",
-    startPosition: "Side",
-    passedLine: true,
-    l1CoralsAuto: 3,
-    l2CoralsAuto: 2,
-    l3CoralsAuto: 1,
-    l4CoralsAuto: 0,
-    netAuto: 2,
-    l1CoralsTele: 8,
-    l2CoralsTele: 6,
-    l3CoralsTele: 4,
-    l4CoralsTele: 2,
-    netTele: 5,
-    processor: 3,
-    highClimb: true,
-    lowClimb: false,
-    comments: "Strong autonomous performance, excellent climbing ability",
-  },
-  {
-    scouterName: "Sarah Chen",
-    matchNumber: 2,
-    teamNumber: "5678",
-    startPosition: "Middle",
-    passedLine: true,
-    l1CoralsAuto: 2,
-    l2CoralsAuto: 3,
-    l3CoralsAuto: 2,
-    l4CoralsAuto: 1,
-    netAuto: 3,
-    l1CoralsTele: 7,
-    l2CoralsTele: 5,
-    l3CoralsTele: 3,
-    l4CoralsTele: 1,
-    netTele: 4,
-    processor: 2,
-    highClimb: false,
-    lowClimb: true,
-    comments: "Consistent scorer, good teleop control",
-  },
-  {
-    scouterName: "Mike Rodriguez",
-    matchNumber: 3,
-    teamNumber: "9012",
-    startPosition: "Side",
-    passedLine: false,
-    l1CoralsAuto: 1,
-    l2CoralsAuto: 1,
-    l3CoralsAuto: 0,
-    l4CoralsAuto: 0,
-    netAuto: 1,
-    l1CoralsTele: 6,
-    l2CoralsTele: 4,
-    l3CoralsTele: 2,
-    l4CoralsTele: 0,
-    netTele: 3,
-    processor: 1,
-    highClimb: false,
-    lowClimb: false,
-    comments: "Struggled in autonomous, decent teleop performance",
-  },
-]
-
-const mockRankings: RankingData[] = [
-  {
-    teamNumber: "1234",
-    teamName: "Robo Warriors",
-    autoAvg: 24.5,
-    teleopAvg: 67.8,
-    endgameAvg: 15.2,
-    overallAvg: 107.5,
-    overallRank: 1,
-  },
-  {
-    teamNumber: "5678",
-    teamName: "Steel Titans",
-    autoAvg: 22.1,
-    teleopAvg: 65.3,
-    endgameAvg: 12.8,
-    overallAvg: 100.2,
-    overallRank: 2,
-  },
-  {
-    teamNumber: "9012",
-    teamName: "Circuit Breakers",
-    autoAvg: 18.7,
-    teleopAvg: 58.9,
-    endgameAvg: 14.1,
-    overallAvg: 91.7,
-    overallRank: 3,
-  },
-  {
-    teamNumber: "3456",
-    teamName: "Gear Heads",
-    autoAvg: 20.3,
-    teleopAvg: 55.2,
-    endgameAvg: 11.5,
-    overallAvg: 87.0,
-    overallRank: 4,
-  },
-  {
-    teamNumber: "7890",
-    teamName: "Bot Builders",
-    autoAvg: 16.8,
-    teleopAvg: 52.4,
-    endgameAvg: 13.2,
-    overallAvg: 82.4,
-    overallRank: 5,
-  },
-  {
-    teamNumber: "2468",
-    teamName: "Mech Masters",
-    autoAvg: 15.2,
-    teleopAvg: 48.7,
-    endgameAvg: 10.8,
-    overallAvg: 74.7,
-    overallRank: 6,
-  },
-  {
-    teamNumber: "1357",
-    teamName: "Code Crushers",
-    autoAvg: 14.1,
-    teleopAvg: 45.3,
-    endgameAvg: 9.2,
-    overallAvg: 68.6,
-    overallRank: 7,
-  },
-  {
-    teamNumber: "8642",
-    teamName: "Tech Titans",
-    autoAvg: 12.5,
-    teleopAvg: 42.1,
-    endgameAvg: 8.5,
-    overallAvg: 63.1,
-    overallRank: 8,
-  },
-]
-
 // API functions
 export const api = {
   // Teams API
@@ -295,16 +162,16 @@ export const api = {
     return <any>(await data).json()
   },
 
-  async getTeam(teamNumber: string): Promise<Team | null> {
-    await delay(200)
-    return mockTeams.find((team) => team.teamNumber === teamNumber) || null
-  },
-
-  async createTeam(teamData: Omit<Team, "ranking">): Promise<Team> {
-    await delay(200)
-    const newTeam = { ...teamData, ranking: mockTeams.length + 1 }
-    mockTeams.push(newTeam)
-    return newTeam
+  async createTeam(teamData: Omit<Team, "ranking">): Promise<Team| null> {
+    const res = await fetch("/api/insertTeam", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(teamData)
+      })
+    if (res.status !== 201) return null
+    return new Team(teamData.teamNumber, teamData.teamName);
   },
 
   // Forms API
@@ -346,17 +213,22 @@ return res;
     return await this.getForm(id)
   },
 
-  async createForm(formData: Omit<Form, "id">): Promise<Form> {
-    await delay(200)
-    const newForm = { ...formData, id: (mockForms.length + 1).toString() }
-    mockForms.push(newForm)
-    return newForm
+  async createForm(formData: any): Promise<Form| null> {
+    const formInput = new FormInput(formData);
+    const res = await fetch("/api/insertForm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formInput)
+      })
+    if (res.status !== 201) return null
+    return new Form(formInput);
   },
 
   // Rankings API
   async getRankings(sortBy: "auto" | "teleop" | "endgame" | "overall" = "overall"): Promise<RankingData[]> {
     let rankings: RankingData[] = await (await fetch("/api/getRankings")).json()
-    console.dir(rankings,{depth: null});
     const sorted = [...rankings].sort((a, b) => {
       switch (sortBy) {
         case "auto":
@@ -370,42 +242,5 @@ return res;
       }
     })
     return sorted
-  },
-
-  // Statistics API
-  async getTeamStatistics(teamNumber: string): Promise<any> {
-    await delay(200)
-    const teamForms = mockForms.filter((form) => form.teamNumber === teamNumber)
-
-    if (teamForms.length === 0) return null
-
-    // Calculate statistics from forms
-    const coralData = teamForms.map((form, index) => ({
-      match: form.matchNumber,
-      L1: form.l1CoralsAuto + form.l1CoralsTele,
-      L2: form.l2CoralsAuto + form.l2CoralsTele,
-      L3: form.l3CoralsAuto + form.l3CoralsTele,
-      L4: form.l4CoralsAuto + form.l4CoralsTele,
-    }))
-
-    const autoVsTeleop = teamForms.map((form) => ({
-      match: form.matchNumber,
-      auto: form.l1CoralsAuto + form.l2CoralsAuto + form.l3CoralsAuto + form.l4CoralsAuto + form.netAuto,
-      teleop: form.l1CoralsTele + form.l2CoralsTele + form.l3CoralsTele + form.l4CoralsTele + form.netTele,
-    }))
-
-    const climbingData = [
-      { type: "High Climb", count: teamForms.filter((f) => f.highClimb).length },
-      { type: "Low Climb", count: teamForms.filter((f) => f.lowClimb).length },
-      { type: "No Climb", count: teamForms.filter((f) => !f.highClimb && !f.lowClimb).length },
-    ]
-
-    return {
-      coralData,
-      autoVsTeleop,
-      climbingData,
-      totalMatches: teamForms.length,
-      avgProcessor: teamForms.reduce((sum, f) => sum + f.processor, 0) / teamForms.length,
-    }
   },
 }

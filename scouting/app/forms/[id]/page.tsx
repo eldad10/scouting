@@ -66,7 +66,6 @@ export default function FormDetailPage({ params }: FormDetailPageProps) {
   }
 
 const {autoScore, teleopScore, endgameScore, totalScore} = form
-console.log({autoScore, teleopScore, endgameScore, totalScore});
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="mb-4 sm:mb-6">

@@ -8,10 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Users, Save } from "lucide-react"
-import { api } from "@/lib/api"
+import { api, Team } from "@/lib/api"
 
 export default function CreateTeamPage() {
-  const [teamData, setTeamData] = useState({
+  const [teamData, setTeamData] = useState<Omit<Team, "ranking">>({
     teamNumber: "",
     teamName: "",
   })
@@ -27,17 +27,18 @@ export default function CreateTeamPage() {
       setLoading(true)
       setError(null)
 
-      await api.createTeam({
+      const team = await api.createTeam({
         teamNumber: teamData.teamNumber,
         teamName: teamData.teamName,
       })
 
-      setSuccess(true)
+      if (team) setSuccess(true);
+      else setSuccess(false);
       setTeamData({ teamNumber: "", teamName: "" })
 
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message)
     } finally {
       setLoading(false)
