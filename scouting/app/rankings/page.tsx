@@ -107,11 +107,12 @@ export default function RankingsPage() {
   })
 
   const handleSort = (field: SortField) => {
+    console.log("[v0] handleSort called with field:", field)
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
       setSortField(field)
-      setSortDirection(field === "teamNumber" ? "asc" : "desc") // Team number ascending by default, others descending
+      setSortDirection(field === "teamNumber" ? "asc" : "desc")
     }
   }
 
@@ -231,31 +232,37 @@ export default function RankingsPage() {
           <CardTitle className="text-base sm:text-lg">Team Rankings</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-16 px-2 sm:px-4 bg-card">
+                    <TableHead className="sticky left-0 z-20 w-16 px-2 sm:px-4 bg-card shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                       <div className="font-semibold text-xs sm:text-sm">Rank</div>
                     </TableHead>
-                    <TableHead className="px-2 sm:px-4 min-w-[120px] bg-card">
+                    <TableHead className="sticky left-16 z-20 px-2 sm:px-4 min-w-[120px] bg-card shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort("teamNumber")}
-                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                        onClick={() => {
+                          console.log("[v0] Team button clicked")
+                          handleSort("teamNumber")
+                        }}
+                        className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Team
                         {getSortIcon("teamNumber")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort("overallAvg")}
-                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                        onClick={() => {
+                          console.log("[v0] Overall button clicked")
+                          handleSort("overallAvg")
+                        }}
+                        className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Overall
                         {getSortIcon("overallAvg")}
@@ -264,34 +271,43 @@ export default function RankingsPage() {
                     <TableHead className="px-2 sm:px-4 min-w-[100px]">
                       <div className="font-semibold text-xs sm:text-sm">Overall Rank</div>
                     </TableHead>
-                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort("autoAvg")}
-                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                        onClick={() => {
+                          console.log("[v0] Auto button clicked")
+                          handleSort("autoAvg")
+                        }}
+                        className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Auto
                         {getSortIcon("autoAvg")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort("teleopAvg")}
-                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                        onClick={() => {
+                          console.log("[v0] Teleop button clicked")
+                          handleSort("teleopAvg")
+                        }}
+                        className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Teleop
                         {getSortIcon("teleopAvg")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort("endgameAvg")}
-                        className="h-6 sm:h-8 p-0 font-semibold text-xs sm:text-sm"
+                        onClick={() => {
+                          console.log("[v0] Endgame button clicked")
+                          handleSort("endgameAvg")
+                        }}
+                        className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Endgame
                         {getSortIcon("endgameAvg")}
@@ -302,13 +318,13 @@ export default function RankingsPage() {
                 <TableBody>
                   {filteredRankings.map((team, index) => (
                     <TableRow key={team.teamNumber} className="hover:bg-muted/50">
-                      <TableCell className="font-medium px-2 sm:px-4 bg-card">
+                      <TableCell className="sticky left-0 z-10 font-medium px-2 sm:px-4 bg-card">
                         <div className="flex items-center space-x-1">
                           {getRankIcon(team.overallRank)}
                           <span className="text-xs sm:text-sm">{index + 1}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 sm:px-4 bg-card">
+                      <TableCell className="sticky left-16 z-10 px-2 sm:px-4 bg-card">
                         <Link href={`/statistics?team=${team.teamNumber}`} className="hover:underline">
                           <div>
                             <div className="font-medium text-xs sm:text-sm">Team {team.teamNumber}</div>
