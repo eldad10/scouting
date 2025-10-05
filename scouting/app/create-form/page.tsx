@@ -64,6 +64,7 @@ export default function CreateFormPage() {
     if (!formData.scouterName.trim()) return "Scouter name is required"
     if (!formData.matchNumber.trim()) return "Match number is required"
     if (!formData.teamNumber.trim()) return "Team number is required"
+    if (!formData.comments.trim()) return "Comments are required"
 
     const matchNum = Number.parseInt(formData.matchNumber, 10)
     if (isNaN(matchNum) || matchNum < 1) {
@@ -128,6 +129,20 @@ export default function CreateFormPage() {
     setFormData((prev) => ({
       ...prev,
       [field]: numValue,
+    }))
+  }
+
+  const incrementValue = (field: keyof FormState) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: (prev[field] as number) + 1,
+    }))
+  }
+
+  const decrementValue = (field: keyof FormState) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: Math.max(0, (prev[field] as number) - 1),
     }))
   }
 
@@ -232,13 +247,13 @@ export default function CreateFormPage() {
                         type="radio"
                         id="startSide"
                         name="startPosition"
-                        value="side"
+                        value="Side"
                         checked={formData.startPosition === "Side"}
                         onChange={(e) => handleInputChange("startPosition", e.target.value as "Side" | "Middle")}
                         className="w-4 h-4"
                         disabled={loading}
                       />
-                      <Label htmlFor="startSide" className="text-sm sm:text-base">
+                      <Label htmlFor="startSide" className="text-sm sm:text-base cursor-pointer">
                         Side
                       </Label>
                     </div>
@@ -247,13 +262,13 @@ export default function CreateFormPage() {
                         type="radio"
                         id="startMiddle"
                         name="startPosition"
-                        value="middle"
+                        value="Middle"
                         checked={formData.startPosition === "Middle"}
                         onChange={(e) => handleInputChange("startPosition", e.target.value as "Side" | "Middle")}
                         className="w-4 h-4"
                         disabled={loading}
                       />
-                      <Label htmlFor="startMiddle" className="text-sm sm:text-base">
+                      <Label htmlFor="startMiddle" className="text-sm sm:text-base cursor-pointer">
                         Middle
                       </Label>
                     </div>
@@ -281,71 +296,181 @@ export default function CreateFormPage() {
                   <Label htmlFor="l1CoralsAuto" className="text-xs sm:text-sm">
                     L1 Corals
                   </Label>
-                  <Input
-                    id="l1CoralsAuto"
-                    type="number"
-                    min="0"
-                    value={formData.l1CoralsAuto}
-                    onChange={(e) => handleNumberChange("l1CoralsAuto", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l1CoralsAuto")}
+                      disabled={loading || formData.l1CoralsAuto === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l1CoralsAuto"
+                      type="number"
+                      min="0"
+                      value={formData.l1CoralsAuto}
+                      onChange={(e) => handleNumberChange("l1CoralsAuto", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l1CoralsAuto")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="l2CoralsAuto" className="text-xs sm:text-sm">
                     L2 Corals
                   </Label>
-                  <Input
-                    id="l2CoralsAuto"
-                    type="number"
-                    min="0"
-                    value={formData.l2CoralsAuto}
-                    onChange={(e) => handleNumberChange("l2CoralsAuto", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l2CoralsAuto")}
+                      disabled={loading || formData.l2CoralsAuto === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l2CoralsAuto"
+                      type="number"
+                      min="0"
+                      value={formData.l2CoralsAuto}
+                      onChange={(e) => handleNumberChange("l2CoralsAuto", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l2CoralsAuto")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="l3CoralsAuto" className="text-xs sm:text-sm">
                     L3 Corals
                   </Label>
-                  <Input
-                    id="l3CoralsAuto"
-                    type="number"
-                    min="0"
-                    value={formData.l3CoralsAuto}
-                    onChange={(e) => handleNumberChange("l3CoralsAuto", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l3CoralsAuto")}
+                      disabled={loading || formData.l3CoralsAuto === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l3CoralsAuto"
+                      type="number"
+                      min="0"
+                      value={formData.l3CoralsAuto}
+                      onChange={(e) => handleNumberChange("l3CoralsAuto", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l3CoralsAuto")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="l4CoralsAuto" className="text-xs sm:text-sm">
                     L4 Corals
                   </Label>
-                  <Input
-                    id="l4CoralsAuto"
-                    type="number"
-                    min="0"
-                    value={formData.l4CoralsAuto}
-                    onChange={(e) => handleNumberChange("l4CoralsAuto", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l4CoralsAuto")}
+                      disabled={loading || formData.l4CoralsAuto === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l4CoralsAuto"
+                      type="number"
+                      min="0"
+                      value={formData.l4CoralsAuto}
+                      onChange={(e) => handleNumberChange("l4CoralsAuto", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l4CoralsAuto")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <Label htmlFor="netAuto" className="text-xs sm:text-sm">
                     Net Auto
                   </Label>
-                  <Input
-                    id="netAuto"
-                    type="number"
-                    min="0"
-                    value={formData.netAuto}
-                    onChange={(e) => handleNumberChange("netAuto", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("netAuto")}
+                      disabled={loading || formData.netAuto === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="netAuto"
+                      type="number"
+                      min="0"
+                      value={formData.netAuto}
+                      onChange={(e) => handleNumberChange("netAuto", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("netAuto")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -365,85 +490,217 @@ export default function CreateFormPage() {
                   <Label htmlFor="l1CoralsTele" className="text-xs sm:text-sm">
                     L1 Corals
                   </Label>
-                  <Input
-                    id="l1CoralsTele"
-                    type="number"
-                    min="0"
-                    value={formData.l1CoralsTele}
-                    onChange={(e) => handleNumberChange("l1CoralsTele", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l1CoralsTele")}
+                      disabled={loading || formData.l1CoralsTele === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l1CoralsTele"
+                      type="number"
+                      min="0"
+                      value={formData.l1CoralsTele}
+                      onChange={(e) => handleNumberChange("l1CoralsTele", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l1CoralsTele")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="l2CoralsTele" className="text-xs sm:text-sm">
                     L2 Corals
                   </Label>
-                  <Input
-                    id="l2CoralsTele"
-                    type="number"
-                    min="0"
-                    value={formData.l2CoralsTele}
-                    onChange={(e) => handleNumberChange("l2CoralsTele", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l2CoralsTele")}
+                      disabled={loading || formData.l2CoralsTele === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l2CoralsTele"
+                      type="number"
+                      min="0"
+                      value={formData.l2CoralsTele}
+                      onChange={(e) => handleNumberChange("l2CoralsTele", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l2CoralsTele")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="l3CoralsTele" className="text-xs sm:text-sm">
                     L3 Corals
                   </Label>
-                  <Input
-                    id="l3CoralsTele"
-                    type="number"
-                    min="0"
-                    value={formData.l3CoralsTele}
-                    onChange={(e) => handleNumberChange("l3CoralsTele", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l3CoralsTele")}
+                      disabled={loading || formData.l3CoralsTele === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l3CoralsTele"
+                      type="number"
+                      min="0"
+                      value={formData.l3CoralsTele}
+                      onChange={(e) => handleNumberChange("l3CoralsTele", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l3CoralsTele")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="l4CoralsTele" className="text-xs sm:text-sm">
                     L4 Corals
                   </Label>
-                  <Input
-                    id="l4CoralsTele"
-                    type="number"
-                    min="0"
-                    value={formData.l4CoralsTele}
-                    onChange={(e) => handleNumberChange("l4CoralsTele", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("l4CoralsTele")}
+                      disabled={loading || formData.l4CoralsTele === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="l4CoralsTele"
+                      type="number"
+                      min="0"
+                      value={formData.l4CoralsTele}
+                      onChange={(e) => handleNumberChange("l4CoralsTele", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("l4CoralsTele")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="netTele" className="text-xs sm:text-sm">
                     Net Tele
                   </Label>
-                  <Input
-                    id="netTele"
-                    type="number"
-                    min="0"
-                    value={formData.netTele}
-                    onChange={(e) => handleNumberChange("netTele", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("netTele")}
+                      disabled={loading || formData.netTele === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="netTele"
+                      type="number"
+                      min="0"
+                      value={formData.netTele}
+                      onChange={(e) => handleNumberChange("netTele", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("netTele")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="processor" className="text-xs sm:text-sm">
                     Processor
                   </Label>
-                  <Input
-                    id="processor"
-                    type="number"
-                    min="0"
-                    value={formData.processor}
-                    onChange={(e) => handleNumberChange("processor", e.target.value)}
-                    disabled={loading}
-                    className="text-sm sm:text-base"
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => decrementValue("processor")}
+                      disabled={loading || formData.processor === 0}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="processor"
+                      type="number"
+                      min="0"
+                      value={formData.processor}
+                      onChange={(e) => handleNumberChange("processor", e.target.value)}
+                      disabled={loading}
+                      className="text-sm sm:text-base text-center"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 bg-transparent"
+                      onClick={() => incrementValue("processor")}
+                      disabled={loading}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -516,7 +773,7 @@ export default function CreateFormPage() {
             </CardHeader>
             <CardContent>
               <Label htmlFor="comments" className="text-sm sm:text-base">
-                Comments
+                Comments <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="comments"
@@ -526,6 +783,7 @@ export default function CreateFormPage() {
                 maxLength={150}
                 className="mt-2 text-sm sm:text-base"
                 disabled={loading}
+                required
               />
               <p className="text-xs sm:text-sm text-muted-foreground mt-1">{formData.comments.length}/150 characters</p>
             </CardContent>

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
-import { api, RankingData } from "@/lib/api"
+import { api, type RankingData } from "@/lib/api"
 
 type SortField = "ranking" | "teamNumber" | "autoAvg" | "teleopAvg" | "endgameAvg" | "overallAvg"
 type SortDirection = "asc" | "desc"
@@ -231,15 +231,15 @@ export default function RankingsPage() {
           <CardTitle className="text-base sm:text-lg">Team Rankings</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <div className="min-w-[500px] sm:min-w-0">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-16 px-2 sticky left-0 bg-background">
+                    <TableHead className="w-16 px-2 sm:px-4 bg-card">
                       <div className="font-semibold text-xs sm:text-sm">Rank</div>
                     </TableHead>
-                    <TableHead className="px-2 min-w-[120px] sticky left-16 bg-background">
+                    <TableHead className="px-2 sm:px-4 min-w-[120px] bg-card">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -250,7 +250,7 @@ export default function RankingsPage() {
                         {getSortIcon("teamNumber")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -261,10 +261,10 @@ export default function RankingsPage() {
                         {getSortIcon("overallAvg")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[100px]">
                       <div className="font-semibold text-xs sm:text-sm">Overall Rank</div>
                     </TableHead>
-                    <TableHead className="px-2 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -275,7 +275,7 @@ export default function RankingsPage() {
                         {getSortIcon("autoAvg")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -286,7 +286,7 @@ export default function RankingsPage() {
                         {getSortIcon("teleopAvg")}
                       </Button>
                     </TableHead>
-                    <TableHead className="px-2 min-w-[80px]">
+                    <TableHead className="px-2 sm:px-4 min-w-[80px]">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -302,13 +302,13 @@ export default function RankingsPage() {
                 <TableBody>
                   {filteredRankings.map((team, index) => (
                     <TableRow key={team.teamNumber} className="hover:bg-muted/50">
-                      <TableCell className="font-medium px-2 sticky left-0 bg-background">
+                      <TableCell className="font-medium px-2 sm:px-4 bg-card">
                         <div className="flex items-center space-x-1">
                           {getRankIcon(team.overallRank)}
                           <span className="text-xs sm:text-sm">{index + 1}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 sticky left-16 bg-background">
+                      <TableCell className="px-2 sm:px-4 bg-card">
                         <Link href={`/statistics?team=${team.teamNumber}`} className="hover:underline">
                           <div>
                             <div className="font-medium text-xs sm:text-sm">Team {team.teamNumber}</div>
@@ -316,24 +316,24 @@ export default function RankingsPage() {
                           </div>
                         </Link>
                       </TableCell>
-                      <TableCell className="font-medium px-2">
+                      <TableCell className="font-medium px-2 sm:px-4">
                         <Badge variant="outline" className="font-medium text-xs sm:text-sm">
                           {(team.overallAvg || 0).toFixed(1)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                      <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
                         <div className="flex items-center space-x-1">
                           {getRankIcon(team.overallRank)}
                           <span>#{team.overallRank}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                      <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
                         {(team.autoAvg || 0).toFixed(1)}
                       </TableCell>
-                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                      <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
                         {(team.teleopAvg || 0).toFixed(1)}
                       </TableCell>
-                      <TableCell className="font-medium px-2 text-xs sm:text-sm">
+                      <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
                         {(team.endgameAvg || 0).toFixed(1)}
                       </TableCell>
                     </TableRow>
