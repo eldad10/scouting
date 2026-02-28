@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Navigation } from "@/components/navigation"
+import { DemoBanner } from "@/components/demo-banner"
 import { Suspense } from "react"
 import "./globals.css"
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <Navigation />
         </Suspense>
+        <DemoBanner />
         <main className="min-h-screen bg-background">{children}</main>
         <Analytics />
       </body>

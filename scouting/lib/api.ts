@@ -1,6 +1,4 @@
-import { te } from "date-fns/locale";
-
-// Mock API service with simulated delays
+// API service
 export class Team {
   teamNumber: string
   teamName: string

@@ -1,9 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { Form } from "@/lib/api";
+import { isDemoMode, getDemoForms, getDemoForm } from "@/lib/demo-data";
 import dotenv from "dotenv";
 import { NextRequest } from "next/server";
 export const dynamic = "force-dynamic";
 export async function GET() {
+  if (isDemoMode()) {
+    return new Response(JSON.stringify(getDemoForms()), {
+      status: 200,
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    });
+  }
 
   if(!process.env.EXPO_PUBLIC_SUPABASE_URL){
     dotenv.config();
@@ -30,6 +37,16 @@ export async function GET() {
 
 
 export async function POST(req: NextRequest) {
+  const { teamNumber, matchNumber } = await req.json()
+
+  if (isDemoMode()) {
+    const form = getDemoForm(teamNumber, Number(matchNumber))
+    return new Response(JSON.stringify(form), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   if (!process.env.EXPO_PUBLIC_SUPABASE_URL) {
     dotenv.config()
   }
@@ -45,7 +62,6 @@ export async function POST(req: NextRequest) {
   )
 
   try {
-    // read request body as JSON
     const {teamNumber, matchNumber} = await req.json()
     // insert into Supabase
     const { data, error } = await client

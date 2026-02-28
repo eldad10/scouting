@@ -1,9 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
+import { isDemoMode, insertDemoForm } from "@/lib/demo-data";
+import { FormInput } from "@/lib/api";
 import dotenv from "dotenv";
 import { NextRequest } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const fromInput: FormInput = await req.json();
+
+  if (isDemoMode()) {
+    insertDemoForm(fromInput);
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   if (!process.env.EXPO_PUBLIC_SUPABASE_URL) {
     dotenv.config();
   }
@@ -19,13 +31,13 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-    // read request body as JSON
-    const fromInput = await req.json();
+    // read request body as JSON — already parsed above for demo check
+    const fromInput2 = fromInput;
 
     // insert into Teams
     const { data, error } = await client
       .from("forms")
-      .insert([fromInput]) // only teamnumber & teamName
+      .insert([fromInput2])
 
     if (error) throw error;
     return new Response(JSON.stringify(data), {

@@ -1,8 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 import { RankingData } from "@/lib/api";
+import { isDemoMode, getDemoRankings } from "@/lib/demo-data";
 import dotenv from "dotenv";
 export const dynamic = "force-dynamic";
 export async function GET() {
+  if (isDemoMode()) {
+    return new Response(JSON.stringify(getDemoRankings()), {
+      status: 200,
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    });
+  }
 
   if(!process.env.EXPO_PUBLIC_SUPABASE_URL){
     dotenv.config();
