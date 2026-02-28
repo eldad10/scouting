@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link"
 import { api, type RankingData } from "@/lib/api"
 
-type SortField = "ranking" | "teamNumber" | "autoAvg" | "teleopAvg" | "endgameAvg" | "overallAvg"
+type SortField = "ranking" | "teamNumber" | "autoAvg" | "teleopAvg" | "endgameAvg" | "overallAvg" | "mobilityCount" | "dockedCount" | "balancedCount"
 type SortDirection = "asc" | "desc"
 
 export default function RankingsPage() {
@@ -20,6 +20,7 @@ export default function RankingsPage() {
   const [rankings, setRankings] = useState<RankingData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [showLabels, setShowLabels] = useState(false)
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -93,6 +94,18 @@ export default function RankingsPage() {
       case "endgameAvg":
         aValue = a.endgameAvg || 0
         bValue = b.endgameAvg || 0
+        break
+      case "mobilityCount":
+        aValue = a.mobilityCount || 0
+        bValue = b.mobilityCount || 0
+        break
+      case "dockedCount":
+        aValue = a.dockedCount || 0
+        bValue = b.dockedCount || 0
+        break
+      case "balancedCount":
+        aValue = a.balancedCount || 0
+        bValue = b.balancedCount || 0
         break
       default:
         aValue = a.overallAvg || 0
@@ -213,17 +226,26 @@ export default function RankingsPage() {
       </div>
 
       <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4">
-        <Select value={rankingType} onValueChange={setRankingType}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Ranking Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="overall">Overall Ranking</SelectItem>
-            <SelectItem value="auto">Auto Ranking</SelectItem>
-            <SelectItem value="teleop">Teleop Ranking</SelectItem>
-            <SelectItem value="endgame">Endgame Ranking</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <Select value={rankingType} onValueChange={setRankingType}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Ranking Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="overall">Overall Ranking</SelectItem>
+              <SelectItem value="auto">Auto Ranking</SelectItem>
+              <SelectItem value="teleop">Teleop Ranking</SelectItem>
+              <SelectItem value="endgame">Endgame Ranking</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button 
+            variant={showLabels ? "default" : "outline"} 
+            onClick={() => setShowLabels(!showLabels)}
+            className="w-full sm:w-48"
+          >
+            {showLabels ? "Hide Label Counts" : "Show Label Counts"}
+          </Button>
+        </div>
       </div>
 
       {/* Rankings Table */}
@@ -313,6 +335,43 @@ export default function RankingsPage() {
                         {getSortIcon("endgameAvg")}
                       </Button>
                     </TableHead>
+                    {showLabels && (
+                      <>
+                        <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSort("mobilityCount")}
+                            className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
+                          >
+                            Mobility
+                            {getSortIcon("mobilityCount")}
+                          </Button>
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSort("dockedCount")}
+                            className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
+                          >
+                            Docked
+                            {getSortIcon("dockedCount")}
+                          </Button>
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-4 min-w-[80px] relative z-10">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSort("balancedCount")}
+                            className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
+                          >
+                            Balanced
+                            {getSortIcon("balancedCount")}
+                          </Button>
+                        </TableHead>
+                      </>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -352,6 +411,19 @@ export default function RankingsPage() {
                       <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
                         {(team.endgameAvg || 0).toFixed(1)}
                       </TableCell>
+                      {showLabels && (
+                        <>
+                          <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
+                            {team.mobilityCount || 0}
+                          </TableCell>
+                          <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
+                            {team.dockedCount || 0}
+                          </TableCell>
+                          <TableCell className="font-medium px-2 sm:px-4 text-xs sm:text-sm">
+                            {team.balancedCount || 0}
+                          </TableCell>
+                        </>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>

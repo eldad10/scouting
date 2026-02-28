@@ -153,6 +153,28 @@ export default function StatisticsPage() {
     climbType: form.highClimb ? "High" : form.lowClimb ? "Low" : "None",
   }))
 
+  // Label frequency calculations
+  const mobilityCount = filteredForms.filter((form) => form.labels?.includes("mobility")).length
+  const dockedCount = filteredForms.filter((form) => form.labels?.includes("docked")).length
+  const balancedCount = filteredForms.filter((form) => form.labels?.includes("balanced")).length
+
+  const mobilityPercentage = filteredForms.length > 0 ? ((mobilityCount / filteredForms.length) * 100).toFixed(1) : "0.0"
+  const dockedPercentage = filteredForms.length > 0 ? ((dockedCount / filteredForms.length) * 100).toFixed(1) : "0.0"
+  const balancedPercentage = filteredForms.length > 0 ? ((balancedCount / filteredForms.length) * 100).toFixed(1) : "0.0"
+
+  const labelFrequencyData = [
+    { name: "Mobility", count: mobilityCount, percentage: parseFloat(mobilityPercentage) },
+    { name: "Docked", count: dockedCount, percentage: parseFloat(dockedPercentage) },
+    { name: "Balanced", count: balancedCount, percentage: parseFloat(balancedPercentage) },
+  ]
+
+  const labelOverTimeData = filteredForms.map((form) => ({
+    match: form.matchNumber,
+    mobility: form.labels?.includes("mobility") ? 1 : 0,
+    docked: form.labels?.includes("docked") ? 1 : 0,
+    balanced: form.labels?.includes("balanced") ? 1 : 0,
+  }))
+
   const addExcludedMatch = () => {
     const matchNum = Number.parseInt(newExcludedMatch)
     if (matchNum && !excludedMatches.includes(matchNum)) {
@@ -331,6 +353,39 @@ export default function StatisticsPage() {
                 <p className="text-xs text-muted-foreground">Successful climbs</p>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
+                <CardTitle className="text-xs sm:text-sm font-medium">Mobility Rate</CardTitle>
+                <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="p-4 sm:p-8 pt-0">
+                <div className="text-lg sm:text-2xl font-bold">{mobilityPercentage}%</div>
+                <p className="text-xs text-muted-foreground">{mobilityCount} matches</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
+                <CardTitle className="text-xs sm:text-sm font-medium">Docked Rate</CardTitle>
+                <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="p-4 sm:p-8 pt-0">
+                <div className="text-lg sm:text-2xl font-bold">{dockedPercentage}%</div>
+                <p className="text-xs text-muted-foreground">{dockedCount} matches</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
+                <CardTitle className="text-xs sm:text-sm font-medium">Balanced Rate</CardTitle>
+                <Target className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="p-4 sm:p-8 pt-0">
+                <div className="text-lg sm:text-2xl font-bold">{balancedPercentage}%</div>
+                <p className="text-xs text-muted-foreground">{balancedCount} matches</p>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:gap-8 mb-8 sm:mb-10">
@@ -456,6 +511,60 @@ export default function StatisticsPage() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+              <Card>
+                <CardHeader className="p-6 sm:p-8">
+                  <CardTitle className="text-base sm:text-lg">Label Frequency - Team {selectedTeam}</CardTitle>
+                  <CardDescription className="text-sm">Percentage of matches with each label applied</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 sm:p-8 pt-0">
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={labelFrequencyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+                      <Tooltip formatter={(value) => `${value}%`} />
+                      <Bar dataKey="percentage" fill="#4f46e5" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="p-6 sm:p-8">
+                  <CardTitle className="text-base sm:text-lg">Label Frequency Over Time</CardTitle>
+                  <CardDescription className="text-sm">Label application across matches</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 sm:p-8 pt-0">
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={labelOverTimeData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="match" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} domain={[0, 1]} />
+                      <Tooltip
+                        formatter={(value) => (value === 1 ? "Yes" : "No")}
+                        labelFormatter={(label) => `Match ${label}`}
+                      />
+                      <Line type="monotone" dataKey="mobility" stroke="#4f46e5" strokeWidth={2} name="Mobility" />
+                      <Line type="monotone" dataKey="docked" stroke="#06b6d4" strokeWidth={2} name="Docked" />
+                      <Line type="monotone" dataKey="balanced" stroke="#f59e0b" strokeWidth={2} name="Balanced" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-wrap justify-center gap-6 mt-6 text-xs sm:text-sm">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-[#4f46e5] rounded mr-2"></div>Mobility
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-[#06b6d4] rounded mr-2"></div>Docked
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-[#f59e0b] rounded mr-2"></div>Balanced
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </>
       )}

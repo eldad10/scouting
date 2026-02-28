@@ -65,14 +65,18 @@ export default function FormDetailPage({ params }: FormDetailPageProps) {
     notFound()
   }
 
-const {autoScore, teleopScore, endgameScore, totalScore} = form
+const {autoScore, teleopScore, climbScore, totalScore} = form
+
+const autoLabels = form.autoLabels ? form.autoLabels.split(',').filter((l: string) => l.trim()) : []
+const teleopLabels = form.teleopLabels ? form.teleopLabels.split(',').filter((l: string) => l.trim()) : []
+
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="mb-4 sm:mb-6">
         <Button variant="outline" size="sm" asChild className="mb-3 sm:mb-4 bg-transparent">
           <Link href="/forms">
             <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-sm sm:text-base">Back to Forms</span>
+            <span className="text-sm sm:text-base">Back to Games</span>
           </Link>
         </Button>
 
@@ -81,10 +85,10 @@ const {autoScore, teleopScore, endgameScore, totalScore} = form
             <h1 className="text-xl sm:text-3xl font-bold text-foreground text-balance">
               Team {form.teamNumber} - Match {form.matchNumber}
             </h1>
-            <h2 className="text-base sm:text-xl text-muted-foreground">Qualification Match</h2>
+            <h2 className="text-base sm:text-xl text-muted-foreground">Game Recording</h2>
           </div>
           <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm sm:text-lg px-2 sm:px-3 py-1 self-start">
-            Completed
+            Recorded
           </Badge>
         </div>
 
@@ -94,7 +98,7 @@ const {autoScore, teleopScore, endgameScore, totalScore} = form
             <span className="text-sm sm:text-base">Scout: {form.scouterName}</span>
           </div>
           <div className="flex items-center sm:text-right">
-            <div className="text-base sm:text-lg font-semibold text-foreground mr-2">{totalScore}</div>
+            <div className="text-base sm:text-lg font-semibold text-foreground mr-2">{totalScore?.toFixed(1) || 0}</div>
             <div className="text-xs sm:text-sm text-muted-foreground">Total Score</div>
           </div>
         </div>
@@ -112,19 +116,19 @@ const {autoScore, teleopScore, endgameScore, totalScore} = form
           <CardContent className="space-y-4 sm:space-y-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2 sm:p-4 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400">{autoScore}</div>
+                <div className="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400">{autoScore?.toFixed(1) || 0}</div>
                 <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-400">Auto</div>
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 sm:p-4 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-green-600 dark:text-green-400">{teleopScore}</div>
+                <div className="text-lg sm:text-2xl font-bold text-green-600 dark:text-green-400">{teleopScore?.toFixed(1) || 0}</div>
                 <div className="text-xs sm:text-sm text-green-600 dark:text-green-400">Teleop</div>
               </div>
               <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-2 sm:p-4 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-purple-600 dark:text-purple-400">{endgameScore}</div>
-                <div className="text-xs sm:text-sm text-purple-600 dark:text-purple-400">Endgame</div>
+                <div className="text-lg sm:text-2xl font-bold text-purple-600 dark:text-purple-400">{climbScore?.toFixed(1) || 0}</div>
+                <div className="text-xs sm:text-sm text-purple-600 dark:text-purple-400">Climb</div>
               </div>
               <div className="bg-accent/10 rounded-lg p-2 sm:p-4 text-center">
-                <div className="text-lg sm:text-2xl font-bold text-accent">{totalScore}</div>
+                <div className="text-lg sm:text-2xl font-bold text-accent">{totalScore?.toFixed(1) || 0}</div>
                 <div className="text-xs sm:text-sm text-accent">Total</div>
               </div>
             </div>
@@ -137,36 +141,14 @@ const {autoScore, teleopScore, endgameScore, totalScore} = form
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-4 text-xs sm:text-sm">
                   <div className="flex justify-between py-1">
-                    <span>Start Position:</span>
-                    <span className={form.startPosition==="Side" ? "text-green-600" : "text-red-600"}>
-                      {form.startPosition}
+                    <span>Balls Scored:</span>
+                    <span>{form.autoBalls || '-'}</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span>Climbed:</span>
+                    <span className={form.autoClimb ? "text-green-600" : "text-red-600"}>
+                      {form.autoClimb ? "Yes" : "No"}
                     </span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>Passed Line:</span>
-                    <span className={form.passedLine ? "text-green-600" : "text-red-600"}>
-                      {form.passedLine ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>L1 Corals:</span>
-                    <span>{form.l1CoralsAuto || 0}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>L2 Corals:</span>
-                    <span>{form.l2CoralsAuto || 0}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>L3 Corals:</span>
-                    <span>{form.l3CoralsAuto || 0}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>L4 Corals:</span>
-                    <span>{form.l4CoralsAuto || 0}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>Net:</span>
-                    <span>{form.netAuto || 0}</span>
                   </div>
                 </div>
               </div>
@@ -176,51 +158,22 @@ const {autoScore, teleopScore, endgameScore, totalScore} = form
                   <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   Teleoperated Period
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-4 text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-xs sm:text-sm">
                   <div className="flex justify-between py-1">
-                    <span>L1 Corals:</span>
-                    <span>{form.l1CoralsTele || 0}</span>
+                    <span>Balls Scored:</span>
+                    <span>{form.teleopBalls || '-'}</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span>L2 Corals:</span>
-                    <span>{form.l2CoralsTele || 0}</span>
+                    <span>Climb Level:</span>
+                    <span>{form.teleopClimbLevel || 0}</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span>L3 Corals:</span>
-                    <span>{form.l3CoralsTele || 0}</span>
+                    <span>Defence:</span>
+                    <span>{form.defenceRating}/5</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span>L4 Corals:</span>
-                    <span>{form.l4CoralsTele || 0}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>Net:</span>
-                    <span>{form.netTele || 0}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>Processor:</span>
-                    <span>{form.processor || 0}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-2 flex items-center text-sm sm:text-base">
-                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  Endgame
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-4 text-xs sm:text-sm">
-                  <div className="flex justify-between py-1">
-                    <span>High Climb:</span>
-                    <span className={form.highClimb ? "text-green-600" : "text-red-600"}>
-                      {form.highClimb ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span>Low Climb:</span>
-                    <span className={form.lowClimb ? "text-green-600" : "text-red-600"}>
-                      {form.lowClimb ? "Yes" : "No"}
-                    </span>
+                    <span>Delivery:</span>
+                    <span>{form.deliveryRating}/5</span>
                   </div>
                 </div>
               </div>
@@ -228,13 +181,48 @@ const {autoScore, teleopScore, endgameScore, totalScore} = form
           </CardContent>
         </Card>
 
-        {/* Scout Notes */}
+        {/* Labels & Notes */}
         <Card>
           <CardHeader className="pb-3 sm:pb-6">
-            <CardTitle className="text-base sm:text-lg">Scout Notes & Comments</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Labels & Notes</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">{form.comments}</p>
+          <CardContent className="space-y-4">
+            {autoLabels.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Auto Labels</h4>
+                <div className="flex flex-wrap gap-2">
+                  {autoLabels.map((label: string) => (
+                    <Badge key={label} variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {teleopLabels.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Teleop Labels</h4>
+                <div className="flex flex-wrap gap-2">
+                  {teleopLabels.map((label: string) => (
+                    <Badge key={label} variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {form.comments && (
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Comments</h4>
+                <p className="text-muted-foreground text-sm">{form.comments}</p>
+              </div>
+            )}
+            
+            {autoLabels.length === 0 && teleopLabels.length === 0 && !form.comments && (
+              <p className="text-muted-foreground text-sm">No labels or comments added</p>
+            )}
           </CardContent>
         </Card>
       </div>

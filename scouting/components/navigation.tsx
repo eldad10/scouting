@@ -79,7 +79,7 @@ export function Navigation() {
                 <DropdownMenuItem asChild>
                   <Link href="/create-form" className="flex items-center space-x-2">
                     <FileText className="h-4 w-4" />
-                    <span>New Form</span>
+                    <span>New Game</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -150,7 +150,7 @@ export function Navigation() {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <FileText className="h-5 w-5" />
-                  <span>New Form</span>
+                  <span>New Game</span>
                 </Link>
                 <Link
                   href="/create-team"

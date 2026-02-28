@@ -94,7 +94,7 @@ export default function HomePage() {
               <Button variant="outline" className="w-full justify-start bg-transparent text-sm h-9 sm:h-10" asChild>
                 <Link href="/create-form">
                   <FileText className="h-4 w-4 mr-2" />
-                  Create Scouting Form
+                  New Game Recording
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent text-sm h-9 sm:h-10" asChild>
@@ -108,28 +108,17 @@ export default function HomePage() {
         </Card>
 
         <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center text-base sm:text-lg">
-              <Trophy className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Competition Overview
-            </CardTitle>
-            <CardDescription className="text-sm">Current competition status and highlights</CardDescription>
+          <CardHeader className="text-center p-3 sm:p-6">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-accent mx-auto mb-1 sm:mb-2" />
+            <CardTitle className="text-sm sm:text-base">Games</CardTitle>
+            <CardDescription className="text-xs sm:text-sm hidden sm:block">
+              Manage game recordings
+            </CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Teams Registered</span>
-                <span className="font-semibold">64</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Forms Submitted</span>
-                <span className="font-semibold">156</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Matches Played</span>
-                <span className="font-semibold">32</span>
-              </div>
-            </div>
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <Button asChild className="w-full text-xs sm:text-sm h-8 sm:h-10">
+              <Link href="/forms">View Games</Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
