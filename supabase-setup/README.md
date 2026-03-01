@@ -21,7 +21,7 @@ This folder contains all the SQL migrations needed to set up your Supabase datab
 2. Go to **SQL Editor** → **New Query**
 3. Copy the contents of `01_create_tables.sql` and paste into the editor
 4. Click **Run**
-5. Repeat for `02_create_rankings_view.sql`
+5. Repeat for `02_create_rankings_view.sql`, `03_insert_sample_data.sql`, and `04_create_rpc_functions.sql`
 6. Your database is ready!
 
 ### Option B: Using Supabase CLI (For developers)
@@ -44,9 +44,10 @@ supabase db push
 
 | File | Purpose |
 |------|---------|
-| `01_create_tables.sql` | Creates `teams` and `forms` tables with proper schema |
+| `01_create_tables.sql` | Creates `Teams` and `Forms` tables with proper schema |
 | `02_create_rankings_view.sql` | Creates `rankings` view that calculates team averages |
-| `03_insert_sample_data.sql` | (Optional) Inserts 5 sample teams for testing |
+| `03_insert_sample_data.sql` | (Optional) Inserts 15 sample matches for testing |
+| `04_create_rpc_functions.sql` | Creates `get_teams_with_rank1()` RPC for fetching teams with rankings |
 
 ## Database Schema
 
