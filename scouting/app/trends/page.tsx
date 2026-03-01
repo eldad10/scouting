@@ -248,16 +248,55 @@ export default function TrendsPage() {
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Line
-                      type="monotone"
+                      type="linear"
                       dataKey="total"
                       stroke="hsl(var(--accent))"
                       strokeWidth={3}
                       dot={{ fill: 'hsl(var(--accent))', r: 5 }}
                       activeDot={{ r: 7 }}
+                      isAnimationActive={true}
                       name="Total"
                     />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Match Details Table */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-base sm:text-lg">Match Details</CardTitle>
+              <CardDescription>Detailed score breakdown for each match</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-border">
+                    <tr>
+                      <th className="text-left py-2 px-2 font-semibold">Match</th>
+                      <th className="text-right py-2 px-2 font-semibold">Auto</th>
+                      <th className="text-right py-2 px-2 font-semibold">Teleop</th>
+                      <th className="text-right py-2 px-2 font-semibold">Climb</th>
+                      <th className="text-right py-2 px-2 font-semibold">Total</th>
+                      <th className="text-center py-2 px-2 font-semibold">Defence</th>
+                      <th className="text-center py-2 px-2 font-semibold">Delivery</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {trendData.map((row) => (
+                      <tr key={row.match} className="border-b border-border hover:bg-slate-50 dark:hover:bg-slate-900/30">
+                        <td className="py-2 px-2 font-semibold">{row.match}</td>
+                        <td className="text-right py-2 px-2 text-blue-600 dark:text-blue-400">{row.auto}</td>
+                        <td className="text-right py-2 px-2 text-green-600 dark:text-green-400">{row.teleop}</td>
+                        <td className="text-right py-2 px-2 text-purple-600 dark:text-purple-400">{row.climb}</td>
+                        <td className="text-right py-2 px-2 font-bold text-accent">{row.total}</td>
+                        <td className="text-center py-2 px-2">{row.defence}/5</td>
+                        <td className="text-center py-2 px-2">{row.delivery}/5</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
@@ -327,42 +366,7 @@ export default function TrendsPage() {
             </CardContent>
           </Card>
 
-          {/* Match Details Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Match Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-border">
-                    <tr>
-                      <th className="text-left py-2 px-2 font-semibold">Match</th>
-                      <th className="text-right py-2 px-2 font-semibold">Auto</th>
-                      <th className="text-right py-2 px-2 font-semibold">Teleop</th>
-                      <th className="text-right py-2 px-2 font-semibold">Climb</th>
-                      <th className="text-right py-2 px-2 font-semibold">Total</th>
-                      <th className="text-center py-2 px-2 font-semibold">Defence</th>
-                      <th className="text-center py-2 px-2 font-semibold">Delivery</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {trendData.map((row) => (
-                      <tr key={row.match} className="border-b border-border hover:bg-slate-50 dark:hover:bg-slate-900/30">
-                        <td className="py-2 px-2 font-semibold">{row.match}</td>
-                        <td className="text-right py-2 px-2 text-blue-600 dark:text-blue-400">{row.auto}</td>
-                        <td className="text-right py-2 px-2 text-green-600 dark:text-green-400">{row.teleop}</td>
-                        <td className="text-right py-2 px-2 text-purple-600 dark:text-purple-400">{row.climb}</td>
-                        <td className="text-right py-2 px-2 font-bold text-accent">{row.total}</td>
-                        <td className="text-center py-2 px-2">{row.defence}/5</td>
-                        <td className="text-center py-2 px-2">{row.delivery}/5</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+
         </>
       )}
 

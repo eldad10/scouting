@@ -35,19 +35,19 @@ const ComparisonStats = ({ form, label }: { form: any; label: string }) => {
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4 text-center border-2 border-blue-200 dark:border-blue-800">
           <div className="text-sm text-blue-600 dark:text-blue-400 mb-1">Auto</div>
           <div className="text-2xl sm:text-3xl font-bold text-blue-700 dark:text-blue-300">
-            {(form.autoBalls === '0-5' ? 2.5 : form.autoBalls === '5-10' ? 7.5 : form.autoBalls === '10-15' ? 12.5 : form.autoBalls === '15-20' ? 17.5 : form.autoBalls === '20+' ? 22.5 : 0) + (form.autoClimb ? 15 : 0)}
+            {form.avgAuto !== undefined ? form.avgAuto : (form.autoBalls === '0-5' ? 2.5 : form.autoBalls === '5-10' ? 7.5 : form.autoBalls === '10-15' ? 12.5 : form.autoBalls === '15-20' ? 17.5 : form.autoBalls === '20+' ? 22.5 : 0) + (form.autoClimb ? 15 : 0)}
           </div>
         </div>
         <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 sm:p-4 text-center border-2 border-green-200 dark:border-green-800">
           <div className="text-sm text-green-600 dark:text-green-400 mb-1">Teleop</div>
           <div className="text-2xl sm:text-3xl font-bold text-green-700 dark:text-green-300">
-            {(form.teleopBalls === '0-10' ? 5 : form.teleopBalls === '10-20' ? 15 : form.teleopBalls === '20-40' ? 30 : form.teleopBalls === '40-60' ? 50 : form.teleopBalls === '60-80' ? 70 : form.teleopBalls === '80-100' ? 90 : form.teleopBalls === '100+' ? 110 : 0)}
+            {form.avgTeleop !== undefined ? form.avgTeleop : (form.teleopBalls === '0-10' ? 5 : form.teleopBalls === '10-20' ? 15 : form.teleopBalls === '20-40' ? 30 : form.teleopBalls === '40-60' ? 50 : form.teleopBalls === '60-80' ? 70 : form.teleopBalls === '80-100' ? 90 : form.teleopBalls === '100+' ? 110 : 0)}
           </div>
         </div>
         <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 sm:p-4 text-center border-2 border-purple-200 dark:border-purple-800">
           <div className="text-sm text-purple-600 dark:text-purple-400 mb-1">Climb</div>
           <div className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-300">
-            {(form.autoClimb ? 15 : 0) + (form.teleopClimbLevel === 1 ? 10 : form.teleopClimbLevel === 2 ? 20 : form.teleopClimbLevel === 3 ? 30 : 0)}
+            {form.avgClimb !== undefined ? form.avgClimb : (form.autoClimb ? 15 : 0) + (form.teleopClimbLevel === 1 ? 10 : form.teleopClimbLevel === 2 ? 20 : form.teleopClimbLevel === 3 ? 30 : 0)}
           </div>
         </div>
       </div>
@@ -157,22 +157,99 @@ export default function ComparePage() {
   }, [])
 
   const handleCompare = async () => {
-    if (!team1.teamNumber || !team1.matchNumber || !team2.teamNumber || !team2.matchNumber) {
+    if (!team1.teamNumber || !team2.teamNumber) {
       return
     }
 
     setLoading(true)
     try {
-      const match1 = allForms.find(
-        (f) => f.teamNumber === team1.teamNumber && f.matchNumber === parseInt(team1.matchNumber)
-      )
-      const match2 = allForms.find(
-        (f) => f.teamNumber === team2.teamNumber && f.matchNumber === parseInt(team2.matchNumber)
-      )
+      let match1, match2
+      
+      // If no match selected, get the average of all matches for that team
+      if (team1.matchNumber) {
+        match1 = allForms.find(
+          (f) => f.teamNumber === team1.teamNumber && f.matchNumber === parseInt(team1.matchNumber)
+        )
+      } else {
+        // Calculate averages from all matches
+        const team1Forms = allForms.filter((f) => f.teamNumber === team1.teamNumber)
+        if (team1Forms.length > 0) {
+          match1 = createAverageForm(team1Forms, team1.teamNumber)
+        }
+      }
+
+      if (team2.matchNumber) {
+        match2 = allForms.find(
+          (f) => f.teamNumber === team2.teamNumber && f.matchNumber === parseInt(team2.matchNumber)
+        )
+      } else {
+        // Calculate averages from all matches
+        const team2Forms = allForms.filter((f) => f.teamNumber === team2.teamNumber)
+        if (team2Forms.length > 0) {
+          match2 = createAverageForm(team2Forms, team2.teamNumber)
+        }
+      }
+
       setForm1(match1 || null)
       setForm2(match2 || null)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const createAverageForm = (forms: any[], teamNumber: string) => {
+    const getBallPoints = (range: string, isTeleop: boolean): number => {
+      if (isTeleop) {
+        switch(range) {
+          case '0-10': return 5
+          case '10-20': return 15
+          case '20-40': return 30
+          case '40-60': return 50
+          case '60-80': return 70
+          case '80-100': return 90
+          case '100+': return 110
+          default: return 0
+        }
+      } else {
+        switch(range) {
+          case '0-5': return 2.5
+          case '5-10': return 7.5
+          case '10-15': return 12.5
+          case '15-20': return 17.5
+          case '20+': return 22.5
+          default: return 0
+        }
+      }
+    }
+
+    const avgAuto = forms.reduce((sum, f) => sum + getBallPoints(f.autoBalls, false) + (f.autoClimb ? 15 : 0), 0) / forms.length
+    const avgTeleop = forms.reduce((sum, f) => sum + getBallPoints(f.teleopBalls, true), 0) / forms.length
+    const avgClimb = forms.reduce((sum, f) => sum + (f.autoClimb ? 15 : 0) + (f.teleopClimbLevel === 1 ? 10 : f.teleopClimbLevel === 2 ? 20 : f.teleopClimbLevel === 3 ? 30 : 0), 0) / forms.length
+    const avgDefence = forms.reduce((sum, f) => sum + f.defenceRating, 0) / forms.length
+    const avgDelivery = forms.reduce((sum, f) => sum + f.deliveryRating, 0) / forms.length
+
+    const allLabels = new Set()
+    forms.forEach(f => {
+      f.autoLabels?.forEach((l: string) => allLabels.add(l))
+      f.teleopLabels?.forEach((l: string) => allLabels.add(l))
+    })
+
+    return {
+      teamNumber,
+      matchNumber: 0,
+      scoutName: 'Team Average',
+      autoBalls: 'avg',
+      autoClimb: avgClimb > 7.5,
+      autoLabels: [],
+      teleopBalls: 'avg',
+      teleopClimbLevel: avgClimb > 25 ? 3 : avgClimb > 15 ? 2 : avgClimb > 7.5 ? 1 : 0,
+      defenceRating: Math.round(avgDefence * 10) / 10,
+      deliveryRating: Math.round(avgDelivery * 10) / 10,
+      teleopLabels: Array.from(allLabels),
+      comments: `Average of ${forms.length} matches`,
+      avgAuto: Math.round(avgAuto * 100) / 100,
+      avgTeleop: Math.round(avgTeleop * 100) / 100,
+      avgClimb: Math.round(avgClimb * 100) / 100,
     }
   }
 
@@ -189,9 +266,9 @@ export default function ComparePage() {
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-6xl">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Match Comparison</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Team Comparison</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Compare side-by-side performance of two teams in any match
+          Compare side-by-side performance of two teams. Leave match empty to see overall averages.
         </p>
       </div>
 

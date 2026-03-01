@@ -324,14 +324,15 @@ export default function CreateFormPage() {
                 </div>
                 {formData.autoLabels.size > 0 && (
                   <div className="mt-3 pt-3 border-t border-border">
-                    <p className="text-xs text-muted-foreground mb-2">Selected labels:</p>
+                    <p className="text-xs text-muted-foreground mb-2">Selected labels (click × to remove):</p>
                     <div className="flex flex-wrap gap-2">
                       {Array.from(formData.autoLabels).map((label) => (
-                        <button
+                        <div
                           key={label}
-                          type="button"
-                          onClick={() => toggleAutoLabel(label)}
-                          className="hover:scale-110 transition-transform"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            toggleAutoLabel(label)
+                          }}
                         >
                           <LabelBadge
                             label={label}
@@ -339,7 +340,7 @@ export default function CreateFormPage() {
                             onRemove={() => toggleAutoLabel(label)}
                             size="sm"
                           />
-                        </button>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -480,14 +481,15 @@ export default function CreateFormPage() {
                 </div>
                 {formData.teleopLabels.size > 0 && (
                   <div className="mt-3 pt-3 border-t border-border">
-                    <p className="text-xs text-muted-foreground mb-2">Selected labels:</p>
+                    <p className="text-xs text-muted-foreground mb-2">Selected labels (click × to remove):</p>
                     <div className="flex flex-wrap gap-2">
                       {Array.from(formData.teleopLabels).map((label) => (
-                        <button
+                        <div
                           key={label}
-                          type="button"
-                          onClick={() => toggleTeleopLabel(label)}
-                          className="hover:scale-110 transition-transform"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            toggleTeleopLabel(label)
+                          }}
                         >
                           <LabelBadge
                             label={label}
@@ -495,7 +497,7 @@ export default function CreateFormPage() {
                             onRemove={() => toggleTeleopLabel(label)}
                             size="sm"
                           />
-                        </button>
+                        </div>
                       ))}
                     </div>
                   </div>

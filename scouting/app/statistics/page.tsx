@@ -503,59 +503,98 @@ export default function StatisticsPage() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-              <Card>
-                <CardHeader className="p-6 sm:p-8">
-                  <CardTitle className="text-base sm:text-lg">Label Frequency - Team {selectedTeam}</CardTitle>
-                  <CardDescription className="text-sm">Percentage of matches with each label applied</CardDescription>
-                </CardHeader>
-                <CardContent className="p-6 sm:p-8 pt-0">
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={labelFrequencyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
-                      <Tooltip formatter={(value) => `${value}%`} />
-                      <Bar dataKey="percentage" fill="#4f46e5" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+            {/* Most Used Labels - Progress Bars */}
+            <Card>
+              <CardHeader className="p-6 sm:p-8">
+                <CardTitle className="text-base sm:text-lg">Top Scout Labels - Team {selectedTeam}</CardTitle>
+                <CardDescription className="text-sm">Shows which scout observations appear most frequently and their consistency</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 sm:p-8 pt-0">
+                <div className="space-y-5">
+                  {labelFrequencyData.length > 0 ? (
+                    labelFrequencyData.map((item, idx) => (
+                      <div key={item.name} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium truncate flex-1">{item.name}</span>
+                          <span className="text-sm font-bold text-primary ml-2">{item.percentage}%</span>
+                          <span className="text-xs text-muted-foreground ml-2">({item.count} times)</span>
+                        </div>
+                        <div className="w-full h-7 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600">
+                          <div
+                            className={`h-full flex items-center justify-start px-2 text-white text-xs font-semibold transition-all ${
+                              idx === 0 ? 'bg-amber-500' :
+                              idx === 1 ? 'bg-blue-500' :
+                              idx === 2 ? 'bg-green-500' :
+                              idx === 3 ? 'bg-purple-500' :
+                              'bg-orange-500'
+                            }`}
+                            style={{ width: `${Math.max(item.percentage, 3)}%` }}
+                          >
+                            {item.percentage > 15 && item.percentage}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-muted-foreground py-8">No labels used yet</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader className="p-6 sm:p-8">
-                  <CardTitle className="text-base sm:text-lg">Label Frequency Over Time</CardTitle>
-                  <CardDescription className="text-sm">Label application across matches</CardDescription>
-                </CardHeader>
-                <CardContent className="p-6 sm:p-8 pt-0">
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={labelOverTimeData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="match" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} domain={[0, 1]} />
-                      <Tooltip
-                        formatter={(value) => (value === 1 ? "Yes" : "No")}
-                        labelFormatter={(label) => `Match ${label}`}
-                      />
-                      <Line type="monotone" dataKey="mobility" stroke="#4f46e5" strokeWidth={2} name="Mobility" />
-                      <Line type="monotone" dataKey="docked" stroke="#06b6d4" strokeWidth={2} name="Docked" />
-                      <Line type="monotone" dataKey="balanced" stroke="#f59e0b" strokeWidth={2} name="Balanced" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                  <div className="flex flex-wrap justify-center gap-6 mt-6 text-xs sm:text-sm">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-[#4f46e5] rounded mr-2"></div>Mobility
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-[#06b6d4] rounded mr-2"></div>Docked
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-[#f59e0b] rounded mr-2"></div>Balanced
+            {/* Label Consistency Chart */}
+            <Card>
+              <CardHeader className="p-6 sm:p-8">
+                <CardTitle className="text-base sm:text-lg">Label Pattern Over Matches</CardTitle>
+                <CardDescription className="text-sm">Tracks which labels were used in each match to identify patterns</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 sm:p-8 pt-0">
+                {labelOverTimeData.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left p-2 font-semibold">Match</th>
+                          {topLabels.map(([label]) => (
+                            <th key={label} className="text-center p-2 font-semibold text-xs max-w-[100px]">
+                              <div className="truncate">{label}</div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {labelOverTimeData.map((row: any, idx) => (
+                          <tr key={row.match} className={idx % 2 === 0 ? 'bg-slate-50 dark:bg-slate-900/30' : ''}>
+                            <td className="p-2 font-medium">Match {row.match}</td>
+                            {topLabels.map(([label]) => (
+                              <td key={`${row.match}-${label}`} className="text-center p-2">
+                                {row[label] === 1 ? (
+                                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                                ) : (
+                                  <span className="inline-block w-2 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <div className="mt-4 flex gap-4 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>Label used</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+                        <span>Not used</span>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                ) : (
+                  <p className="text-center text-muted-foreground py-8">No matches recorded</p>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </>
       )}
