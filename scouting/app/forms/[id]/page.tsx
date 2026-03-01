@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { LabelBadge } from "@/components/label-badge"
 import { Button } from "@/components/ui/button"
 import { User, ArrowLeft, Trophy, Target, Zap, Clock } from "lucide-react"
 import Link from "next/link"
@@ -189,12 +190,19 @@ const teleopLabels = form.teleopLabels ? form.teleopLabels.split(',').filter((l:
           <CardContent className="space-y-4">
             {autoLabels.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-2">Auto Labels</h4>
+                <h4 className="font-semibold text-sm mb-3 flex items-center">
+                  <Zap className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
+                  Auto Phase Labels
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {autoLabels.map((label: string) => (
-                    <Badge key={label} variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      {label}
-                    </Badge>
+                    <LabelBadge 
+                      key={label} 
+                      label={label} 
+                      phase="auto" 
+                      size="sm"
+                      showCategory={true}
+                    />
                   ))}
                 </div>
               </div>
@@ -202,26 +210,33 @@ const teleopLabels = form.teleopLabels ? form.teleopLabels.split(',').filter((l:
             
             {teleopLabels.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-2">Teleop Labels</h4>
+                <h4 className="font-semibold text-sm mb-3 flex items-center">
+                  <Target className="h-4 w-4 mr-2 text-green-600 dark:text-green-400" />
+                  Teleop Phase Labels
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {teleopLabels.map((label: string) => (
-                    <Badge key={label} variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                      {label}
-                    </Badge>
+                    <LabelBadge 
+                      key={label} 
+                      label={label} 
+                      phase="teleop" 
+                      size="sm"
+                      showCategory={true}
+                    />
                   ))}
                 </div>
               </div>
             )}
 
             {form.comments && (
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Comments</h4>
-                <p className="text-muted-foreground text-sm">{form.comments}</p>
+              <div className="mt-4 pt-4 border-t border-border">
+                <h4 className="font-semibold text-sm mb-2">Scout Notes</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed">{form.comments}</p>
               </div>
             )}
             
             {autoLabels.length === 0 && teleopLabels.length === 0 && !form.comments && (
-              <p className="text-muted-foreground text-sm">No labels or comments added</p>
+              <p className="text-muted-foreground text-sm italic">No labels or comments added for this match</p>
             )}
           </CardContent>
         </Card>

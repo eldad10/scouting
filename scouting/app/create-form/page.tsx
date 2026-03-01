@@ -11,25 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { FileText } from "lucide-react"
 import { api } from "@/lib/api"
-
-const AUTO_LABELS = [
-  'Crossed to middle of field',
-  'Collected from human player',
-  'Collected from depot',
-  'Interfered with other robot',
-  'Robot not working in auto'
-]
-
-const TELEOP_LABELS = [
-  'Interfered with team robot',
-  'Robot had issues - limited play',
-  'Collects balls very fast',
-  'Misses a lot of shots',
-  'Played very good defence',
-  'Fast climb',
-  'Experienced in defence',
-  'Struggles with defence'
-]
+import { LabelBadge } from "@/components/label-badge"
+import { AUTO_LABELS, TELEOP_LABELS } from "@/lib/label-config"
 
 interface FormState {
   scouterName: string
@@ -298,29 +281,34 @@ export default function CreateFormPage() {
 
               {/* Auto labels */}
               <div>
-                <Label className="text-sm sm:text-base font-medium mb-3 block">Auto Labels</Label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {AUTO_LABELS.map((label) => (
+                <Label className="text-sm sm:text-base font-medium mb-3 block">Autonomous Phase Labels</Label>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {AUTO_LABELS.map((labelConfig) => (
                     <button
-                      key={label}
+                      key={labelConfig.label}
                       type="button"
-                      onClick={() => toggleAutoLabel(label)}
+                      onClick={() => toggleAutoLabel(labelConfig.label)}
                       disabled={loading}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                        formData.autoLabels.has(label)
-                          ? 'bg-green-600 text-white'
-                          : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      className={`transition-all ${
+                        formData.autoLabels.has(labelConfig.label)
+                          ? 'ring-2 ring-offset-2 ring-blue-500 scale-105'
+                          : 'opacity-75 hover:opacity-100'
                       }`}
                     >
-                      {label}
+                      <LabelBadge
+                        label={labelConfig.label}
+                        phase="auto"
+                        showCategory={true}
+                        size="sm"
+                      />
                     </button>
                   ))}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-3">
                   <Input
                     value={customAutoLabel}
                     onChange={(e) => setCustomAutoLabel(e.target.value)}
-                    placeholder="Add custom label..."
+                    placeholder="Add custom label (e.g., 'Smooth movement')..."
                     disabled={loading}
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomAutoLabel())}
                     className="text-sm sm:text-base"
@@ -328,24 +316,32 @@ export default function CreateFormPage() {
                   <Button
                     type="button"
                     onClick={addCustomAutoLabel}
-                    disabled={loading}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    disabled={loading || !customAutoLabel.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    Add
+                    Add Custom
                   </Button>
                 </div>
                 {formData.autoLabels.size > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {Array.from(formData.autoLabels).map((label) => (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => toggleAutoLabel(label)}
-                        className="px-3 py-1 rounded-full text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-                      >
-                        {label} ×
-                      </button>
-                    ))}
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-xs text-muted-foreground mb-2">Selected labels:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {Array.from(formData.autoLabels).map((label) => (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => toggleAutoLabel(label)}
+                          className="hover:scale-110 transition-transform"
+                        >
+                          <LabelBadge
+                            label={label}
+                            phase="auto"
+                            onRemove={() => toggleAutoLabel(label)}
+                            size="sm"
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -441,29 +437,34 @@ export default function CreateFormPage() {
 
               {/* Teleop labels */}
               <div>
-                <Label className="text-sm sm:text-base font-medium mb-3 block">Teleop Labels</Label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {TELEOP_LABELS.map((label) => (
+                <Label className="text-sm sm:text-base font-medium mb-3 block">Teleoperated Phase Labels</Label>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {TELEOP_LABELS.map((labelConfig) => (
                     <button
-                      key={label}
+                      key={labelConfig.label}
                       type="button"
-                      onClick={() => toggleTeleopLabel(label)}
+                      onClick={() => toggleTeleopLabel(labelConfig.label)}
                       disabled={loading}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                        formData.teleopLabels.has(label)
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      className={`transition-all ${
+                        formData.teleopLabels.has(labelConfig.label)
+                          ? 'ring-2 ring-offset-2 ring-green-500 scale-105'
+                          : 'opacity-75 hover:opacity-100'
                       }`}
                     >
-                      {label}
+                      <LabelBadge
+                        label={labelConfig.label}
+                        phase="teleop"
+                        showCategory={true}
+                        size="sm"
+                      />
                     </button>
                   ))}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-3">
                   <Input
                     value={customTeleopLabel}
                     onChange={(e) => setCustomTeleopLabel(e.target.value)}
-                    placeholder="Add custom label..."
+                    placeholder="Add custom label (e.g., 'Excellent shooting')..."
                     disabled={loading}
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTeleopLabel())}
                     className="text-sm sm:text-base"
@@ -471,24 +472,32 @@ export default function CreateFormPage() {
                   <Button
                     type="button"
                     onClick={addCustomTeleopLabel}
-                    disabled={loading}
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    disabled={loading || !customTeleopLabel.trim()}
+                    className="bg-green-600 hover:bg-green-700 text-white"
                   >
-                    Add
+                    Add Custom
                   </Button>
                 </div>
                 {formData.teleopLabels.size > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {Array.from(formData.teleopLabels).map((label) => (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => toggleTeleopLabel(label)}
-                        className="px-3 py-1 rounded-full text-sm font-medium bg-orange-600 text-white hover:bg-orange-700"
-                      >
-                        {label} ×
-                      </button>
-                    ))}
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-xs text-muted-foreground mb-2">Selected labels:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {Array.from(formData.teleopLabels).map((label) => (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => toggleTeleopLabel(label)}
+                          className="hover:scale-110 transition-transform"
+                        >
+                          <LabelBadge
+                            label={label}
+                            phase="teleop"
+                            onRemove={() => toggleTeleopLabel(label)}
+                            size="sm"
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

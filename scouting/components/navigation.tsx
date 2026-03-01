@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Search, Users, FileText, Trophy, BarChart3, Plus, Menu, X } from "lucide-react"
+import { Search, Users, FileText, Trophy, BarChart3, Plus, Menu, X, TrendingUp, GitCompare } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useState } from "react"
 
@@ -28,6 +28,16 @@ const navigationItems = [
     name: "Statistics",
     href: "/statistics",
     icon: BarChart3,
+  },
+  {
+    name: "Trends",
+    href: "/trends",
+    icon: TrendingUp,
+  },
+  {
+    name: "Compare",
+    href: "/compare",
+    icon: GitCompare,
   },
 ]
 
