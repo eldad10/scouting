@@ -1,7 +1,7 @@
--- Create Teams table
-CREATE TABLE IF NOT EXISTS Teams (
-  TeamNumber VARCHAR(100) PRIMARY KEY,
-  TeamName VARCHAR(100) NOT NULL
+-- Create teams table
+CREATE TABLE IF NOT EXISTS teams (
+  teamnumber VARCHAR(100) PRIMARY KEY,
+  teamname VARCHAR(100) NOT NULL
 );
 
 -- Create Forms table
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS forms (
   teleop_labels TEXT DEFAULT '',
   comments VARCHAR(300),
   PRIMARY KEY (matchnumber, teamnumber),
-  FOREIGN KEY (teamnumber) REFERENCES Teams(TeamNumber) ON DELETE CASCADE
+  FOREIGN KEY (teamnumber) REFERENCES teams(teamnumber) ON DELETE CASCADE
 );
 
 -- Create indexes for better query performance
