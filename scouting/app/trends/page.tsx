@@ -254,7 +254,7 @@ export default function TrendsPage() {
                       strokeWidth={3}
                       dot={{ fill: 'hsl(var(--accent))', r: 5 }}
                       activeDot={{ r: 7 }}
-                      isAnimationActive={true}
+                      connectNulls={true}
                       name="Total"
                     />
                   </LineChart>

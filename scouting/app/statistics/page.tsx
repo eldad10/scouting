@@ -138,11 +138,14 @@ export default function StatisticsPage() {
         ).toFixed(1)
       : "0.0"
 
-  const climbSuccessRate =
+  const autoClimbSuccess =
     filteredForms.length > 0
-      ? ((filteredForms.filter((form) => form.autoClimb || form.teleopClimbLevel > 0).length / filteredForms.length) * 100).toFixed(
-          0,
-        )
+      ? ((filteredForms.filter((form) => form.autoClimb).length / filteredForms.length) * 100).toFixed(0)
+      : "0"
+
+  const teleopClimbSuccess =
+    filteredForms.length > 0
+      ? ((filteredForms.filter((form) => form.teleopClimbLevel > 0).length / filteredForms.length) * 100).toFixed(0)
       : "0"
 
   const avgDefence =
@@ -350,10 +353,7 @@ export default function StatisticsPage() {
               </CardHeader>
               <CardContent className="p-4 sm:p-8 pt-0">
                 <div className="text-lg sm:text-2xl font-bold">{avgAutoScore}</div>
-                <p className="text-xs text-muted-foreground">
-                  <TrendingUp className="inline h-3 w-3 mr-1" />
-                  Per match
-                </p>
+                <p className="text-xs text-muted-foreground">Per match</p>
               </CardContent>
             </Card>
 
@@ -370,45 +370,59 @@ export default function StatisticsPage() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
-                <CardTitle className="text-xs sm:text-sm font-medium">AVG Climb Score</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium">Auto Climb Success</CardTitle>
                 <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </CardHeader>
               <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="text-lg sm:text-2xl font-bold">{avgClimbScore}</div>
-                <p className="text-xs text-muted-foreground">Auto + Teleop climb</p>
+                <div className="text-lg sm:text-2xl font-bold">{autoClimbSuccess}%</div>
+                <p className="text-xs text-muted-foreground">Success rate</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
-                <CardTitle className="text-xs sm:text-sm font-medium">Climb Success</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium">Teleop Climb Success</CardTitle>
                 <Target className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </CardHeader>
               <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="text-lg sm:text-2xl font-bold">{climbSuccessRate}%</div>
-                <p className="text-xs text-muted-foreground">Successful climbs</p>
+                <div className="text-lg sm:text-2xl font-bold">{teleopClimbSuccess}%</div>
+                <p className="text-xs text-muted-foreground">Success rate</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
-                <CardTitle className="text-xs sm:text-sm font-medium">AVG Defence</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium">Defence Rating</CardTitle>
                 <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </CardHeader>
               <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="text-lg sm:text-2xl font-bold">{avgDefence}/10</div>
-                <p className="text-xs text-muted-foreground">Defence rating</p>
+                <div className="flex items-center gap-2">
+                  <div className="text-lg sm:text-xl font-bold">{avgDefence}</div>
+                  <div className="flex-1">
+                    <div className="w-12 h-12 rounded-full border-4 border-slate-200 dark:border-slate-700 flex items-center justify-center" style={{ background: `conic-gradient(#ef4444 0deg ${(parseFloat(avgDefence) / 5) * 360}deg, #e5e7eb ${(parseFloat(avgDefence) / 5) * 360}deg)` }}>
+                      <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-xs font-bold">{avgDefence}</div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Out of 5</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
-                <CardTitle className="text-xs sm:text-sm font-medium">AVG Delivery</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium">Delivery Rating</CardTitle>
                 <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </CardHeader>
               <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="text-lg sm:text-2xl font-bold">{avgDelivery}/10</div>
-                <p className="text-xs text-muted-foreground">Delivery rating</p>
+                <div className="flex items-center gap-2">
+                  <div className="text-lg sm:text-xl font-bold">{avgDelivery}</div>
+                  <div className="flex-1">
+                    <div className="w-12 h-12 rounded-full border-4 border-slate-200 dark:border-slate-700 flex items-center justify-center" style={{ background: `conic-gradient(#06b6d4 0deg ${(parseFloat(avgDelivery) / 5) * 360}deg, #e5e7eb ${(parseFloat(avgDelivery) / 5) * 360}deg)` }}>
+                      <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-xs font-bold">{avgDelivery}</div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Out of 5</p>
               </CardContent>
             </Card>
           </div>
@@ -542,59 +556,6 @@ export default function StatisticsPage() {
               </CardContent>
             </Card>
 
-            {/* Label Consistency Chart */}
-            <Card>
-              <CardHeader className="p-6 sm:p-8">
-                <CardTitle className="text-base sm:text-lg">Label Pattern Over Matches</CardTitle>
-                <CardDescription className="text-sm">Tracks which labels were used in each match to identify patterns</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6 sm:p-8 pt-0">
-                {labelOverTimeData.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left p-2 font-semibold">Match</th>
-                          {topLabels.map(([label]) => (
-                            <th key={label} className="text-center p-2 font-semibold text-xs max-w-[100px]">
-                              <div className="truncate">{label}</div>
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {labelOverTimeData.map((row: any, idx) => (
-                          <tr key={row.match} className={idx % 2 === 0 ? 'bg-slate-50 dark:bg-slate-900/30' : ''}>
-                            <td className="p-2 font-medium">Match {row.match}</td>
-                            {topLabels.map(([label]) => (
-                              <td key={`${row.match}-${label}`} className="text-center p-2">
-                                {row[label] === 1 ? (
-                                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
-                                ) : (
-                                  <span className="inline-block w-2 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
-                                )}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <div className="mt-4 flex gap-4 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
-                        <span>Label used</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
-                        <span>Not used</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">No matches recorded</p>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </>
       )}

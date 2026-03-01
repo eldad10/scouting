@@ -32,33 +32,16 @@ export async function GET() {
     }
   );
 
-  logger.debug("api/getTeams", "Fetching teams from Supabase");
+  logger.debug("api/getTeams", "Fetching teams from rankings view");
 
-  // Get all teams from teams table (lowercase) and join with rankings
-  const { data: teamsData, error: teamsError } = await client
-    .from("teams")
-    .select("*")
-    .order("teamnumber", { ascending: true });
-
-  if (teamsError) {
-    logger.error("api/getTeams", "Error fetching teams", { error: teamsError.message, code: teamsError.code });
-    endTimer();
-    return new Response(JSON.stringify({ error: teamsError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  logger.info("api/getTeams", "Teams fetched successfully", { count: teamsData?.length || 0 });
-
-  // Get rankings
+  // Get all teams from rankings view which includes their rank
   const { data: rankingsData, error: rankingsError } = await client
     .from("rankings")
-    .select("*");
+    .select("teamnumber, teamname, rank")
+    .order("rank", { ascending: true });
 
-  if (rankingsError && rankingsError.code !== "PGRST116") {
-    // PGRST116 = no rows returned, which is fine if no forms exist yet
-    logger.warn("api/getTeams", "Error fetching rankings", { error: rankingsError.message, code: rankingsError.code });
+  if (rankingsError) {
+    logger.error("api/getTeams", "Error fetching rankings", { error: rankingsError.message, code: rankingsError.code });
     endTimer();
     return new Response(JSON.stringify({ error: rankingsError.message }), {
       status: 500,
@@ -66,18 +49,11 @@ export async function GET() {
     });
   }
 
-  logger.debug("api/getTeams", "Rankings fetched", { count: rankingsData?.length || 0 });
+  logger.info("api/getTeams", "Teams with rankings fetched successfully", { count: rankingsData?.length || 0 });
 
-  // Create a map of team rankings for quick lookup
-  const rankingMap = new Map();
-  rankingsData?.forEach((ranking: any) => {
-    rankingMap.set(ranking.teamnumber, ranking.overall_points || 0);
-  });
-
-  // Transform teams data with rankings
-  const transformed = teamsData?.map((team: any) => {
-    const rank = rankingMap.get(team.teamnumber) || 0;
-    return new Team(team.teamnumber, team.teamname, rank);
+  // Transform rankings data to Team objects with rank
+  const transformed = rankingsData?.map((row: any) => {
+    return new Team(row.teamnumber, row.teamname, row.rank);
   }) || [];
 
   logger.success("api/getTeams", "Teams with rankings returned", { count: transformed.length });
