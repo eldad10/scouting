@@ -395,14 +395,9 @@ export default function StatisticsPage() {
                 <CardTitle className="text-xs sm:text-sm font-medium">Defence Rating</CardTitle>
                 <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </CardHeader>
-              <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="flex items-center gap-2">
-                  <div className="text-lg sm:text-xl font-bold">{avgDefence}</div>
-                  <div className="flex-1">
-                    <div className="w-12 h-12 rounded-full border-4 border-slate-200 dark:border-slate-700 flex items-center justify-center" style={{ background: `conic-gradient(#ef4444 0deg ${(parseFloat(avgDefence) / 5) * 360}deg, #e5e7eb ${(parseFloat(avgDefence) / 5) * 360}deg)` }}>
-                      <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-xs font-bold">{avgDefence}</div>
-                    </div>
-                  </div>
+              <CardContent className="p-4 sm:p-8 pt-0 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: `conic-gradient(#ef4444 0deg ${(parseFloat(avgDefence) / 5) * 360}deg, #e5e7eb ${(parseFloat(avgDefence) / 5) * 360}deg)` }}>
+                  <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center text-sm font-bold">{avgDefence}</div>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">Out of 5</p>
               </CardContent>
@@ -413,14 +408,9 @@ export default function StatisticsPage() {
                 <CardTitle className="text-xs sm:text-sm font-medium">Delivery Rating</CardTitle>
                 <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </CardHeader>
-              <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="flex items-center gap-2">
-                  <div className="text-lg sm:text-xl font-bold">{avgDelivery}</div>
-                  <div className="flex-1">
-                    <div className="w-12 h-12 rounded-full border-4 border-slate-200 dark:border-slate-700 flex items-center justify-center" style={{ background: `conic-gradient(#06b6d4 0deg ${(parseFloat(avgDelivery) / 5) * 360}deg, #e5e7eb ${(parseFloat(avgDelivery) / 5) * 360}deg)` }}>
-                      <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-xs font-bold">{avgDelivery}</div>
-                    </div>
-                  </div>
+              <CardContent className="p-4 sm:p-8 pt-0 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: `conic-gradient(#06b6d4 0deg ${(parseFloat(avgDelivery) / 5) * 360}deg, #e5e7eb ${(parseFloat(avgDelivery) / 5) * 360}deg)` }}>
+                  <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center text-sm font-bold">{avgDelivery}</div>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">Out of 5</p>
               </CardContent>

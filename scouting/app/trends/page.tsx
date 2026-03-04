@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { api } from '@/lib/api'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { Trophy, TrendingUp, Zap, Target, Shield } from 'lucide-react'
+import { Trophy, TrendingUp, Zap, Target, Shield, Info } from 'lucide-react'
 
 interface TrendData {
   match: number
@@ -220,6 +220,12 @@ export default function TrendsPage() {
                   <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mb-2" />
                   <div className="text-lg sm:text-2xl font-bold text-blue-600">{stats.consistency}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">Variability</p>
+                  <div className="mt-2 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 flex items-start gap-1 text-left">
+                    <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>
+                      Standard deviation of total scores. <strong>Low = consistent</strong> (same performance every match). <strong>High = inconsistent</strong> (big swings between matches).
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -248,7 +254,7 @@ export default function TrendsPage() {
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Line
-                      type="linear"
+                      type="monotone"
                       dataKey="total"
                       stroke="hsl(var(--accent))"
                       strokeWidth={3}

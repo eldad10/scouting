@@ -130,10 +130,14 @@ export class RankingData {
   autoAvg: number
   teleopAvg: number
   climbAvg: number
+  endgameAvg: number
   defenceAvg: number
   deliveryAvg: number
   overallAvg: number
   overallRank: number
+  mobilityCount?: number
+  dockedCount?: number
+  balancedCount?: number
 
   constructor(rankInput: RankingDataInput){
     this.teamNumber = rankInput.teamnumber;
@@ -141,6 +145,7 @@ export class RankingData {
     this.autoAvg = rankInput.auto_points;
     this.teleopAvg = rankInput.teleop_points;
     this.climbAvg = rankInput.climb_points;
+    this.endgameAvg = rankInput.climb_points;
     this.defenceAvg = rankInput.avg_defence;
     this.deliveryAvg = rankInput.avg_delivery;
     this.overallAvg = rankInput.overall_points;

@@ -120,7 +120,6 @@ export default function RankingsPage() {
   })
 
   const handleSort = (field: SortField) => {
-    console.log("[v0] handleSort called with field:", field)
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
@@ -266,10 +265,7 @@ export default function RankingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          console.log("[v0] Team button clicked")
-                          handleSort("teamNumber")
-                        }}
+                        onClick={() => handleSort("teamNumber")}
                         className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Team
@@ -280,10 +276,7 @@ export default function RankingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          console.log("[v0] Overall button clicked")
-                          handleSort("overallAvg")
-                        }}
+                        onClick={() => handleSort("overallAvg")}
                         className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Overall
@@ -297,10 +290,7 @@ export default function RankingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          console.log("[v0] Auto button clicked")
-                          handleSort("autoAvg")
-                        }}
+                        onClick={() => handleSort("autoAvg")}
                         className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Auto
@@ -311,10 +301,7 @@ export default function RankingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          console.log("[v0] Teleop button clicked")
-                          handleSort("teleopAvg")
-                        }}
+                        onClick={() => handleSort("teleopAvg")}
                         className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Teleop
@@ -325,10 +312,7 @@ export default function RankingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          console.log("[v0] Endgame button clicked")
-                          handleSort("endgameAvg")
-                        }}
+                        onClick={() => handleSort("endgameAvg")}
                         className="h-full w-full justify-start px-2 sm:px-4 font-semibold text-xs sm:text-sm gap-1 rounded-none"
                       >
                         Endgame
