@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { api } from '@/lib/api'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { Trophy, TrendingUp, Zap, Target, Shield, Info } from 'lucide-react'
+import { Trophy, TrendingUp, Zap, Target, Shield } from 'lucide-react'
 
 interface TrendData {
   match: number
@@ -250,15 +250,12 @@ export default function TrendsPage() {
                     <Line
                       type="monotone"
                       dataKey="total"
-                      stroke="hsl(var(--accent))"
+                      stroke="#f59e0b"
                       strokeWidth={3}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      dot={{ fill: 'hsl(var(--accent))', r: 5 }}
+                      dot={{ fill: '#f59e0b', r: 5 }}
                       activeDot={{ r: 7 }}
                       connectNulls={true}
                       name="Total"
-                      isAnimationActive={true}
                     />
                   </LineChart>
                 </ResponsiveContainer>

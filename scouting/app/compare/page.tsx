@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { api } from '@/lib/api'
-import { ChevronRight } from 'lucide-react'
+
 
 interface ComparisonForm {
   teamNumber: string
@@ -18,18 +18,20 @@ interface StatRowProps {
   val1: number
   val2: number
   max?: number
-  isRating?: boolean
+  decimals?: number
   higherIsBetter?: boolean
 }
 
-const StatRow = ({ label, val1, val2, max, isRating, higherIsBetter = true }: StatRowProps) => {
+const StatRow = ({ label, val1, val2, max, decimals = 0, higherIsBetter = true }: StatRowProps) => {
   const effectiveMax = max ?? Math.max(val1, val2, 1)
-  const pct1 = effectiveMax > 0 ? Math.round((val1 / effectiveMax) * 100) : 0
-  const pct2 = effectiveMax > 0 ? Math.round((val2 / effectiveMax) * 100) : 0
+  const pct1 = effectiveMax > 0 ? Math.min(Math.round((val1 / effectiveMax) * 100), 100) : 0
+  const pct2 = effectiveMax > 0 ? Math.min(Math.round((val2 / effectiveMax) * 100), 100) : 0
 
   const team1Better = higherIsBetter ? val1 > val2 : val1 < val2
   const team2Better = higherIsBetter ? val2 > val1 : val2 < val1
   const tied = val1 === val2
+
+  const fmt = (v: number) => decimals > 0 ? v.toFixed(decimals) : v
 
   return (
     <div className="py-3 border-b border-border last:border-0">
@@ -41,8 +43,8 @@ const StatRow = ({ label, val1, val2, max, isRating, higherIsBetter = true }: St
       {/* Values + bars */}
       <div className="flex items-center gap-2">
         {/* Team 1 value */}
-        <div className={`w-12 text-right text-base font-bold shrink-0 ${team1Better ? 'text-blue-600 dark:text-blue-400' : tied ? 'text-foreground' : 'text-muted-foreground'}`}>
-          {isRating ? val1.toFixed(1) : val1}
+        <div className={`w-14 text-right text-base font-bold shrink-0 ${team1Better ? 'text-blue-600 dark:text-blue-400' : tied ? 'text-foreground' : 'text-muted-foreground'}`}>
+          {fmt(val1)}
         </div>
 
         {/* Dual bar */}
@@ -66,8 +68,8 @@ const StatRow = ({ label, val1, val2, max, isRating, higherIsBetter = true }: St
         </div>
 
         {/* Team 2 value */}
-        <div className={`w-12 text-left text-base font-bold shrink-0 ${team2Better ? 'text-green-600 dark:text-green-400' : tied ? 'text-foreground' : 'text-muted-foreground'}`}>
-          {isRating ? val2.toFixed(1) : val2}
+        <div className={`w-14 text-left text-base font-bold shrink-0 ${team2Better ? 'text-green-600 dark:text-green-400' : tied ? 'text-foreground' : 'text-muted-foreground'}`}>
+          {fmt(val2)}
         </div>
       </div>
     </div>
@@ -162,7 +164,7 @@ export default function ComparePage() {
       deliveryRating: Math.round(avgDelivery * 10) / 10,
       autoClimb: autoClimbRate > 0.5,
       autoClimbRate: Math.round(autoClimbRate * 100),
-      teleopClimbLevel: Math.round(avgTeleopClimb),
+      teleopClimbLevel: Math.round(avgTeleopClimb * 100) / 100,
     }
   }
 
@@ -325,34 +327,29 @@ export default function ComparePage() {
       {(form1 || form2) && (
         <Card>
           {/* Header: team labels */}
-          <div className="space-y-2 px-4 py-3 border-b border-border bg-muted/30 rounded-t-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                <span className="font-bold text-sm text-blue-700 dark:text-blue-300">{label1}</span>
-                {form1?.isAverage && (
-                  <Badge variant="secondary" className="text-xs px-1.5 py-0">{form1.matchCount} matches</Badge>
-                )}
+          <div className="px-4 py-4 border-b border-border bg-muted/20 rounded-t-lg">
+            <div className="grid grid-cols-3 items-center gap-2">
+              {/* Team 1 */}
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-blue-500" />
+                <span className="font-bold text-sm text-blue-700 dark:text-blue-300 text-center leading-tight">{label1}</span>
+                <span className="text-xs text-muted-foreground text-center">
+                  {form1?.isAverage ? `${form1.matchCount} matches` : `Match ${form1?.matchNumber}`}
+                </span>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              <div className="flex items-center gap-2">
-                {form2?.isAverage && (
-                  <Badge variant="secondary" className="text-xs px-1.5 py-0">{form2.matchCount} matches</Badge>
-                )}
-                <span className="font-bold text-sm text-green-700 dark:text-green-300">{label2}</span>
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              {/* VS */}
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg font-black text-muted-foreground">VS</span>
+              </div>
+              {/* Team 2 */}
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+                <span className="font-bold text-sm text-green-700 dark:text-green-300 text-center leading-tight">{label2}</span>
+                <span className="text-xs text-muted-foreground text-center">
+                  {form2?.isAverage ? `${form2.matchCount} matches` : `Match ${form2?.matchNumber}`}
+                </span>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {form1?.isAverage && form2?.isAverage 
-                ? `Comparing averages: Team ${form1.teamNumber} (${form1.matchCount}m) vs Team ${form2.teamNumber} (${form2.matchCount}m)`
-                : form1?.isAverage 
-                ? `Team ${form1.teamNumber} average (${form1.matchCount}m) vs Team ${form2.teamNumber} Match ${form2.matchNumber}`
-                : form2?.isAverage
-                ? `Team ${form1.teamNumber} Match ${form1.matchNumber} vs Team ${form2.teamNumber} average (${form2.matchCount}m)`
-                : `Team ${form1.teamNumber} Match ${form1.matchNumber} vs Team ${form2.teamNumber} Match ${form2.matchNumber}`
-              }
-            </p>
           </div>
 
           <CardContent className="px-4 py-4">
@@ -382,20 +379,21 @@ export default function ComparePage() {
               val1={form1?.defenceRating ?? 0}
               val2={form2?.defenceRating ?? 0}
               max={5}
-              isRating
+              decimals={1}
             />
             <StatRow
               label="Delivery Rating"
               val1={form1?.deliveryRating ?? 0}
               val2={form2?.deliveryRating ?? 0}
               max={5}
-              isRating
+              decimals={1}
             />
             <StatRow
-              label={form1?.isAverage && form2?.isAverage ? "Avg Teleop Climb Level" : "Teleop Climb Level"}
+              label={form1?.isAverage || form2?.isAverage ? "Avg Teleop Climb Level" : "Teleop Climb Level"}
               val1={form1?.teleopClimbLevel ?? 0}
               val2={form2?.teleopClimbLevel ?? 0}
               max={3}
+              decimals={form1?.isAverage || form2?.isAverage ? 2 : 0}
             />
             {form1?.isAverage && form2?.isAverage ? (
               <div className="py-3 border-b border-border last:border-0">
