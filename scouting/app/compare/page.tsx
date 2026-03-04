@@ -325,25 +325,38 @@ export default function ComparePage() {
       {(form1 || form2) && (
         <Card>
           {/* Header: team labels */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30 rounded-t-lg">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-              <span className="font-bold text-sm text-blue-700 dark:text-blue-300">{label1}</span>
-              {form1?.isAverage && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">{form1.matchCount}m</Badge>
-              )}
+          <div className="space-y-2 px-4 py-3 border-b border-border bg-muted/30 rounded-t-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                <span className="font-bold text-sm text-blue-700 dark:text-blue-300">{label1}</span>
+                {form1?.isAverage && (
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0">{form1.matchCount} matches</Badge>
+                )}
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-2">
+                {form2?.isAverage && (
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0">{form2.matchCount} matches</Badge>
+                )}
+                <span className="font-bold text-sm text-green-700 dark:text-green-300">{label2}</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              </div>
             </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <div className="flex items-center gap-2">
-              {form2?.isAverage && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">{form2.matchCount}m</Badge>
-              )}
-              <span className="font-bold text-sm text-green-700 dark:text-green-300">{label2}</span>
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-            </div>
+            <p className="text-xs text-muted-foreground">
+              {form1?.isAverage && form2?.isAverage 
+                ? `Comparing averages: Team ${form1.teamNumber} (${form1.matchCount}m) vs Team ${form2.teamNumber} (${form2.matchCount}m)`
+                : form1?.isAverage 
+                ? `Team ${form1.teamNumber} average (${form1.matchCount}m) vs Team ${form2.teamNumber} Match ${form2.matchNumber}`
+                : form2?.isAverage
+                ? `Team ${form1.teamNumber} Match ${form1.matchNumber} vs Team ${form2.teamNumber} average (${form2.matchCount}m)`
+                : `Team ${form1.teamNumber} Match ${form1.matchNumber} vs Team ${form2.teamNumber} Match ${form2.matchNumber}`
+              }
+            </p>
           </div>
 
-          <CardContent className="px-4 py-2">
+          <CardContent className="px-4 py-4">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 text-center">Higher Values →</div>
             <StatRow
               label="Total Score"
               val1={form1?.totalScore ?? 0}
@@ -379,16 +392,47 @@ export default function ComparePage() {
               isRating
             />
             <StatRow
-              label="Teleop Climb Level"
+              label={form1?.isAverage && form2?.isAverage ? "Avg Teleop Climb Level" : "Teleop Climb Level"}
               val1={form1?.teleopClimbLevel ?? 0}
               val2={form2?.teleopClimbLevel ?? 0}
               max={3}
             />
-            <BoolStatRow
-              label="Auto Climb"
-              val1={form1?.autoClimb ?? false}
-              val2={form2?.autoClimb ?? false}
-            />
+            {form1?.isAverage && form2?.isAverage ? (
+              <div className="py-3 border-b border-border last:border-0">
+                <div className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Auto Climb Rate
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-12 text-right text-base font-bold shrink-0 text-blue-600 dark:text-blue-400">
+                    {form1?.autoClimbRate}%
+                  </div>
+                  <div className="flex-1 flex items-center gap-0.5 h-5">
+                    <div className="flex-1 flex justify-end h-full">
+                      <div
+                        className="h-full rounded-l-full transition-all bg-blue-500"
+                        style={{ width: `${form1?.autoClimbRate}%` }}
+                      />
+                    </div>
+                    <div className="w-0.5 h-5 bg-border shrink-0" />
+                    <div className="flex-1 flex justify-start h-full">
+                      <div
+                        className="h-full rounded-r-full transition-all bg-green-500"
+                        style={{ width: `${form2?.autoClimbRate}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-12 text-left text-base font-bold shrink-0 text-green-600 dark:text-green-400">
+                    {form2?.autoClimbRate}%
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <BoolStatRow
+                label="Auto Climb"
+                val1={form1?.autoClimb ?? false}
+                val2={form2?.autoClimb ?? false}
+              />
+            )}
 
             {/* Legend */}
             <div className="flex justify-center gap-6 pt-3 mt-1 border-t border-border text-xs text-muted-foreground">

@@ -220,12 +220,6 @@ export default function TrendsPage() {
                   <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mb-2" />
                   <div className="text-lg sm:text-2xl font-bold text-blue-600">{stats.consistency}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground">Variability</p>
-                  <div className="mt-2 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 flex items-start gap-1 text-left">
-                    <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                    <span>
-                      Standard deviation of total scores. <strong>Low = consistent</strong> (same performance every match). <strong>High = inconsistent</strong> (big swings between matches).
-                    </span>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -258,10 +252,13 @@ export default function TrendsPage() {
                       dataKey="total"
                       stroke="hsl(var(--accent))"
                       strokeWidth={3}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       dot={{ fill: 'hsl(var(--accent))', r: 5 }}
                       activeDot={{ r: 7 }}
                       connectNulls={true}
                       name="Total"
+                      isAnimationActive={true}
                     />
                   </LineChart>
                 </ResponsiveContainer>
