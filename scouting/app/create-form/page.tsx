@@ -13,7 +13,7 @@ import { FileText, WifiOff } from "lucide-react"
 import { api, FormInput } from "@/lib/api"
 import { LabelBadge } from "@/components/label-badge"
 import { AUTO_LABELS, TELEOP_LABELS } from "@/lib/label-config"
-import { useNetworkStatus } from "@/hooks/use-network-status"
+import { useNetwork } from "@/hooks/use-network-status"
 import { useOfflineForms } from "@/hooks/use-offline-forms"
 
 interface FormState {
@@ -48,7 +48,7 @@ const INITIAL_FORM_STATE: FormState = {
 
 export default function CreateFormPage() {
   const router = useRouter()
-  const { isOnline } = useNetworkStatus()
+  const { isOnline } = useNetwork()
   const { enqueue } = useOfflineForms()
   const [formData, setFormData] = useState<FormState>(INITIAL_FORM_STATE)
   const [loading, setLoading] = useState(false)

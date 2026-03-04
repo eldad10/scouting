@@ -1,15 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { useNetworkStatus } from "@/hooks/use-network-status"
+import { useNetwork } from "@/hooks/use-network-status"
 import { useOfflineForms } from "@/hooks/use-offline-forms"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Wifi, WifiOff, RefreshCw, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, Inbox } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { RefreshCw, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, Inbox } from "lucide-react"
 
 export function SyncManager() {
-  const { isOnline } = useNetworkStatus()
+  const { isOnline } = useNetwork()
   const { outbox, syncOutbox, clearOutbox } = useOfflineForms()
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<{ success: number; failed: number } | null>(null)
@@ -17,7 +16,8 @@ export function SyncManager() {
   const [expanded, setExpanded] = useState(false)
 
   const pendingCount = outbox.length
-  const showBanner = !isOnline || pendingCount > 0 || syncResult !== null
+  // Only show when online AND there are items queued (or a sync result to display)
+  const showBanner = isOnline && (pendingCount > 0 || syncResult !== null)
 
   const handleSync = async () => {
     setSyncing(true)
@@ -42,42 +42,32 @@ export function SyncManager() {
 
   return (
     <div
-      className={cn(
-        "sticky top-14 sm:top-16 z-40 w-full border-b text-sm transition-colors",
-        !isOnline
-          ? "bg-amber-500 border-amber-600 text-white"
-          : syncResult?.failed
+      className={
+        "sticky top-14 sm:top-16 z-40 w-full border-b text-sm transition-colors " +
+        (syncResult?.failed
           ? "bg-red-500 border-red-600 text-white"
           : syncResult
           ? "bg-green-600 border-green-700 text-white"
-          : pendingCount > 0
-          ? "bg-blue-600 border-blue-700 text-white"
-          : "bg-muted border-border text-foreground"
-      )}
+          : "bg-blue-600 border-blue-700 text-white")
+      }
     >
       {/* Main bar */}
       <div className="container mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
-          {!isOnline ? (
-            <WifiOff className="h-4 w-4 shrink-0" />
-          ) : syncResult?.failed ? (
+          {syncResult?.failed ? (
             <AlertCircle className="h-4 w-4 shrink-0" />
           ) : syncResult ? (
             <CheckCircle2 className="h-4 w-4 shrink-0" />
           ) : (
-            <Wifi className="h-4 w-4 shrink-0" />
+            <RefreshCw className="h-4 w-4 shrink-0" />
           )}
 
           <span className="font-medium truncate">
-            {!isOnline
-              ? "You are offline"
-              : syncResult?.failed
+            {syncResult?.failed
               ? `Sync failed for ${syncResult.failed} form(s)`
               : syncResult
               ? `${syncResult.success} form(s) synced successfully`
-              : pendingCount > 0
-              ? `${pendingCount} form(s) waiting to sync`
-              : null}
+              : `${pendingCount} pending form(s) ready to sync`}
           </span>
 
           {pendingCount > 0 && (
@@ -147,8 +137,8 @@ export function SyncManager() {
                 className="flex items-center justify-between bg-white/10 rounded px-2 py-1.5 text-xs"
               >
                 <span className="truncate">
-                  Team {(item.payload as any).teamnumber ?? "?"} &mdash; Match{" "}
-                  {(item.payload as any).matchnumber ?? "?"}
+                  Team {(item.payload as any).teamNumber ?? (item.payload as any).teamnumber ?? "?"} &mdash; Match{" "}
+                  {(item.payload as any).matchNumber ?? (item.payload as any).matchnumber ?? "?"}
                 </span>
                 <span className="opacity-60 shrink-0 ml-2">
                   {new Date(item.queuedAt).toLocaleTimeString([], {

@@ -2,14 +2,19 @@
 
 import { useState, useEffect } from "react"
 
-export function useNetworkStatus() {
-  const [isOnline, setIsOnline] = useState<boolean>(
-    typeof navigator !== "undefined" ? navigator.onLine : true
-  )
+/**
+ * Initializes as `true` (safe SSR default) and only reads
+ * navigator.onLine inside useEffect to prevent hydration mismatches.
+ */
+export function useNetwork() {
+  const [isOnline, setIsOnline] = useState(true)
   const [lastOnlineAt, setLastOnlineAt] = useState<Date | null>(null)
   const [lastOfflineAt, setLastOfflineAt] = useState<Date | null>(null)
 
   useEffect(() => {
+    // Sync actual browser state after hydration
+    setIsOnline(navigator.onLine)
+
     const handleOnline = () => {
       setIsOnline(true)
       setLastOnlineAt(new Date())
@@ -30,3 +35,6 @@ export function useNetworkStatus() {
 
   return { isOnline, lastOnlineAt, lastOfflineAt }
 }
+
+/** @deprecated Use `useNetwork` instead */
+export const useNetworkStatus = useNetwork
