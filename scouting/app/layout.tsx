@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Navigation } from "@/components/navigation"
 import { DemoBanner } from "@/components/demo-banner"
+import { SyncManager } from "@/components/sync-manager"
 import { Suspense } from "react"
 import "./globals.css"
 
@@ -26,6 +27,7 @@ export default function RootLayout({
           <Navigation />
         </Suspense>
         <DemoBanner />
+        <SyncManager />
         <main className="min-h-screen bg-background">{children}</main>
         <Analytics />
       </body>

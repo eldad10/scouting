@@ -9,10 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { FileText } from "lucide-react"
-import { api } from "@/lib/api"
+import { FileText, WifiOff } from "lucide-react"
+import { api, FormInput } from "@/lib/api"
 import { LabelBadge } from "@/components/label-badge"
 import { AUTO_LABELS, TELEOP_LABELS } from "@/lib/label-config"
+import { useNetworkStatus } from "@/hooks/use-network-status"
+import { useOfflineForms } from "@/hooks/use-offline-forms"
 
 interface FormState {
   scouterName: string
@@ -46,9 +48,12 @@ const INITIAL_FORM_STATE: FormState = {
 
 export default function CreateFormPage() {
   const router = useRouter()
+  const { isOnline } = useNetworkStatus()
+  const { enqueue } = useOfflineForms()
   const [formData, setFormData] = useState<FormState>(INITIAL_FORM_STATE)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [queued, setQueued] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [customAutoLabel, setCustomAutoLabel] = useState("")
   const [customTeleopLabel, setCustomTeleopLabel] = useState("")
@@ -94,6 +99,16 @@ export default function CreateFormPage() {
         deliveryRating: formData.deliveryRating,
         teleopLabels: Array.from(formData.teleopLabels).join(','),
         comments: formData.comments.trim(),
+      }
+
+      if (!isOnline) {
+        // Save to offline outbox — use the FormInput shape that the API route expects
+        const formInput = new FormInput(formPayload)
+        enqueue(formInput as unknown as Record<string, unknown>)
+        setQueued(true)
+        setFormData({ ...INITIAL_FORM_STATE })
+        setTimeout(() => { setQueued(false); router.push('/forms') }, 2500)
+        return
       }
 
       await api.createForm(formPayload)
@@ -167,6 +182,15 @@ export default function CreateFormPage() {
       {success && (
         <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
           <p className="text-green-800 dark:text-green-200 text-sm sm:text-base">Form submitted successfully! Redirecting...</p>
+        </div>
+      )}
+
+      {queued && (
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-2">
+          <WifiOff className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <p className="text-amber-800 dark:text-amber-200 text-sm sm:text-base">
+            You are offline — form saved to outbox. It will sync automatically when you reconnect.
+          </p>
         </div>
       )}
 
