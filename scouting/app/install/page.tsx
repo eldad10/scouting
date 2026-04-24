@@ -234,6 +234,7 @@ create table if not exists team_info (
   advantages text,
   disadvantages text,
   additional_info text,
+  statbotics_rank int
   updated_at timestamptz default now()
 );`}</CodeBlock>
             </Section>
