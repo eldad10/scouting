@@ -1,4 +1,19 @@
 // API service
+
+export interface TeamInfo {
+  teamNumber: string
+  shooterType: 'fixed' | 'turret'
+  shooterWidth: 'single' | 'double' | 'wide'
+  shootingPosition: 'fixed' | 'all_around'
+  shootingDescription: string
+  deliveryRating: number
+  defenceRating: number
+  speedBalanceRating: number
+  advantages: string
+  disadvantages: string
+  additionalInfo: string
+}
+
 export class Team {
   teamNumber: string
   teamName: string
@@ -223,6 +238,22 @@ return res;
       })
     if (res.status !== 201) return null
     return new Form(formInput);
+  },
+
+  // Team Info API
+  async getTeamInfo(teamNumber: string): Promise<TeamInfo | null> {
+    const res = await fetch(`/api/getTeamInfo?team=${encodeURIComponent(teamNumber)}`)
+    if (!res.ok) return null
+    return res.json()
+  },
+
+  async upsertTeamInfo(info: TeamInfo): Promise<boolean> {
+    const res = await fetch("/api/upsertTeamInfo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(info),
+    })
+    return res.ok
   },
 
   // Rankings API

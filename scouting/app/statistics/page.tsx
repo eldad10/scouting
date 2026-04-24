@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts"
 import { TrendingUp, BarChart3, Activity, Target, X } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { api, Form } from "@/lib/api"
+import { api, Form, TeamInfo } from "@/lib/api"
+import { TeamInfoCard } from "@/components/team-info-card"
 
 export default function StatisticsPage() {
   const searchParams = useSearchParams()
@@ -20,6 +21,7 @@ export default function StatisticsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const [teamInfo, setTeamInfo] = useState<TeamInfo | null>(null)
   const [lastNGames, setLastNGames] = useState<string>("")
   const [excludedMatches, setExcludedMatches] = useState<number[]>([])
   const [newExcludedMatch, setNewExcludedMatch] = useState<string>("")
@@ -42,6 +44,14 @@ export default function StatisticsPage() {
     }
     fetchData()
   }, [])
+
+  useEffect(() => {
+    if (!selectedTeam) {
+      setTeamInfo(null)
+      return
+    }
+    api.getTeamInfo(selectedTeam).then(setTeamInfo)
+  }, [selectedTeam])
 
   useEffect(() => {
     if (!selectedTeam) {
@@ -345,6 +355,11 @@ export default function StatisticsPage() {
 
       {selectedTeam && (
         <>
+          {/* Robot Intelligence card */}
+          <div className="mb-8 sm:mb-10">
+            <TeamInfoCard teamNumber={selectedTeam} initialInfo={teamInfo} />
+          </div>
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-10">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 p-4 sm:p-8">
