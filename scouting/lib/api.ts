@@ -12,6 +12,7 @@ export interface TeamInfo {
   advantages: string
   disadvantages: string
   additionalInfo: string
+  statboticsRank: number | null
 }
 
 export class Team {

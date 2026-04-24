@@ -44,5 +44,6 @@ export async function GET(req: NextRequest) {
     advantages:          data.advantages,
     disadvantages:       data.disadvantages,
     additionalInfo:      data.additional_info,
+    statboticsRank:      data.statbotics_rank ?? null,
   })
 }

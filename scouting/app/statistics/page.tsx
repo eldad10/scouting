@@ -357,7 +357,7 @@ export default function StatisticsPage() {
         <>
           {/* Robot Intelligence card */}
           <div className="mb-8 sm:mb-10">
-            <TeamInfoCard teamNumber={selectedTeam} initialInfo={teamInfo} />
+            <TeamInfoCard teamNumber={selectedTeam} initialInfo={teamInfo} forms={filteredForms} />
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-10">

@@ -1,34 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Pencil, Save, X, Bot, Zap, Shield, Gauge, Crosshair, ChevronsUpDown, CheckCircle2, XCircle, AlertCircle } from "lucide-react"
-import { api, TeamInfo } from "@/lib/api"
+import { Bot, Zap, Shield, Gauge, Crosshair, ChevronsUpDown, CheckCircle2, XCircle, Trophy, Target } from "lucide-react"
+import { TeamInfo, Form } from "@/lib/api"
 
 interface Props {
   teamNumber: string
   initialInfo: TeamInfo | null
+  forms?: Form[]
 }
-
-const EMPTY_INFO = (teamNumber: string): TeamInfo => ({
-  teamNumber,
-  shooterType: "fixed",
-  shooterWidth: "single",
-  shootingPosition: "fixed",
-  shootingDescription: "",
-  deliveryRating: 0,
-  defenceRating: 0,
-  speedBalanceRating: 1,
-  advantages: "",
-  disadvantages: "",
-  additionalInfo: "",
-})
 
 function RatingBar({ value, max = 5, color }: { value: number; max?: number; color: string }) {
   const pct = Math.round((value / max) * 100)
@@ -45,192 +26,141 @@ function RatingBar({ value, max = 5, color }: { value: number; max?: number; col
   )
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-2 py-2 border-b border-border last:border-0">
-      <span className="text-xs text-muted-foreground min-w-[110px] pt-0.5 uppercase tracking-wide font-medium">{label}</span>
-      <span className="text-sm font-medium text-foreground capitalize leading-relaxed">{value || "—"}</span>
-    </div>
-  )
+function getBallsMidpoint(range: string, isTeleop: boolean): number {
+  if (isTeleop) {
+    switch (range) {
+      case "0-10":   return 5
+      case "10-20":  return 15
+      case "20-40":  return 30
+      case "40-60":  return 50
+      case "60-80":  return 70
+      case "80-100": return 90
+      case "100+":   return 105
+      default:       return 0
+    }
+  } else {
+    switch (range) {
+      case "0-5":   return 2.5
+      case "5-10":  return 7.5
+      case "10-15": return 12.5
+      case "15-20": return 17.5
+      case "20+":   return 22
+      default:      return 0
+    }
+  }
 }
 
-export function TeamInfoCard({ teamNumber, initialInfo }: Props) {
-  const [info, setInfo] = useState<TeamInfo>(initialInfo ?? EMPTY_INFO(teamNumber))
-  const [editing, setEditing] = useState(!initialInfo)
-  const [draft, setDraft] = useState<TeamInfo>(info)
-  const [saving, setSaving] = useState(false)
-  const hasData = !!initialInfo
+export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
+  // Compute avg total balls scored per match from scouting forms
+  const avgBallsScored =
+    forms.length > 0
+      ? (
+          forms.reduce(
+            (sum, f) => sum + getBallsMidpoint(f.autoBalls, false) + getBallsMidpoint(f.teleopBalls, true),
+            0
+          ) / forms.length
+        ).toFixed(1)
+      : null
 
-  const handleEdit = () => {
-    setDraft({ ...info })
-    setEditing(true)
-  }
-
-  const handleCancel = () => {
-    setDraft({ ...info })
-    setEditing(false)
-  }
-
-  const handleSave = async () => {
-    setSaving(true)
-    const ok = await api.upsertTeamInfo(draft)
-    if (ok) {
-      setInfo(draft)
-      setEditing(false)
-    }
-    setSaving(false)
-  }
-
-  const set = (field: keyof TeamInfo, value: string | number) =>
-    setDraft((prev) => ({ ...prev, [field]: value }))
-
-  // ── EDIT MODE ──────────────────────────────────────────────────────────────
-  if (editing) {
+  // ── EMPTY STATE — no DB record yet ─────────────────────────────────────────
+  if (!initialInfo) {
     return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Bot className="w-4 h-4 text-primary" />
-            Robot Intel — Team {teamNumber}
-          </CardTitle>
-          <div className="flex gap-2">
-            {hasData && (
-              <Button size="sm" variant="outline" onClick={handleCancel} disabled={saving}>
-                <X className="w-3 h-3 mr-1" /> Cancel
-              </Button>
-            )}
-            <Button size="sm" onClick={handleSave} disabled={saving}>
-              <Save className="w-3 h-3 mr-1" /> {saving ? "Saving…" : "Save"}
-            </Button>
+      <Card className="border-dashed">
+        <CardContent className="flex items-center gap-3 py-5 px-5">
+          <Bot className="w-5 h-5 text-muted-foreground shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              No robot intel on file for Team {teamNumber}
+            </p>
+            <p className="text-xs text-muted-foreground/70 mt-0.5">
+              Add a row to the <code className="text-xs bg-muted px-1 rounded">team_info</code> table to see the full scouting profile here.
+            </p>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Shooter Type</Label>
-              <Select value={draft.shooterType} onValueChange={(v) => set("shooterType", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fixed">Fixed</SelectItem>
-                  <SelectItem value="turret">Turret</SelectItem>
-                </SelectContent>
-              </Select>
+          {avgBallsScored && (
+            <div className="ml-auto text-right shrink-0">
+              <p className="text-lg font-bold tabular-nums">{avgBallsScored}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg balls / match</p>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Shooter Width</Label>
-              <Select value={draft.shooterWidth} onValueChange={(v) => set("shooterWidth", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="single">Single</SelectItem>
-                  <SelectItem value="double">Double</SelectItem>
-                  <SelectItem value="wide">Wide</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Shooting Position</Label>
-              <Select value={draft.shootingPosition} onValueChange={(v) => set("shootingPosition", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fixed">Fixed Spot</SelectItem>
-                  <SelectItem value="all_around">All Around</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Shooting Description</Label>
-            <Textarea
-              value={draft.shootingDescription}
-              onChange={(e) => set("shootingDescription", e.target.value)}
-              rows={2}
-              maxLength={300}
-              placeholder="Describe how and from where this robot shoots…"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {(["deliveryRating", "defenceRating", "speedBalanceRating"] as const).map((field) => (
-              <div key={field} className="space-y-1.5">
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                  {field === "deliveryRating" ? "Delivery" : field === "defenceRating" ? "Defence" : "Speed / Balance"} (0–5)
-                </Label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={5}
-                  value={draft[field]}
-                  onChange={(e) => set(field, Math.min(5, Math.max(0, parseInt(e.target.value) || 0)))}
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Advantages</Label>
-            <Textarea value={draft.advantages} onChange={(e) => set("advantages", e.target.value)} rows={2} maxLength={300} placeholder="What does this robot do well?" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Disadvantages</Label>
-            <Textarea value={draft.disadvantages} onChange={(e) => set("disadvantages", e.target.value)} rows={2} maxLength={300} placeholder="Known weaknesses or limitations…" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Additional Notes</Label>
-            <Textarea value={draft.additionalInfo} onChange={(e) => set("additionalInfo", e.target.value)} rows={2} maxLength={300} placeholder="Any other scouting observations…" />
-          </div>
+          )}
         </CardContent>
       </Card>
     )
   }
 
+  const info = initialInfo
+
   // ── READ MODE ──────────────────────────────────────────────────────────────
   return (
     <Card className="overflow-hidden">
       {/* Header strip */}
-      <div className="bg-primary/8 border-b border-border px-5 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+      <div className="bg-primary/5 border-b border-border px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
             <Bot className="w-4 h-4 text-primary" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Robot Intelligence</p>
-            <p className="text-sm font-bold text-foreground leading-tight">Team {teamNumber}</p>
+            <p className="text-base font-bold text-foreground leading-tight">Team {teamNumber}</p>
           </div>
         </div>
-        <Button size="sm" variant="outline" onClick={handleEdit} className="h-8">
-          <Pencil className="w-3 h-3 mr-1.5" /> Edit
-        </Button>
+
+        {/* Key stats row in header */}
+        <div className="flex items-center gap-4 sm:gap-6">
+          {info.statboticsRank != null && (
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1">
+                <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-lg font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                  #{info.statboticsRank}
+                </span>
+              </div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Statbotics</p>
+            </div>
+          )}
+          {avgBallsScored && (
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1">
+                <Target className="w-3.5 h-3.5 text-blue-500" />
+                <span className="text-lg font-bold tabular-nums text-blue-600 dark:text-blue-400">
+                  {avgBallsScored}
+                </span>
+              </div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg balls / match</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <CardContent className="p-0">
         {/* Shooter profile */}
         <div className="px-5 py-4 border-b border-border">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
             <Crosshair className="w-3.5 h-3.5" /> Shooter Profile
           </p>
-          <div className="grid grid-cols-3 gap-3 mb-3">
-            <div className="bg-muted/50 rounded-lg px-3 py-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Type</p>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3">
+            <div className="bg-muted/40 rounded-lg px-3 py-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Type</p>
               <Badge variant="secondary" className="text-xs capitalize">{info.shooterType}</Badge>
             </div>
-            <div className="bg-muted/50 rounded-lg px-3 py-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Width</p>
+            <div className="bg-muted/40 rounded-lg px-3 py-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Width</p>
               <Badge variant="secondary" className="text-xs capitalize">{info.shooterWidth}</Badge>
             </div>
-            <div className="bg-muted/50 rounded-lg px-3 py-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Position</p>
+            <div className="bg-muted/40 rounded-lg px-3 py-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Position</p>
               <Badge variant="secondary" className="text-xs capitalize">{info.shootingPosition.replace("_", " ")}</Badge>
             </div>
           </div>
           {info.shootingDescription && (
-            <p className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{info.shootingDescription}&rdquo;</p>
+            <p className="text-sm text-muted-foreground leading-relaxed italic">
+              &ldquo;{info.shootingDescription}&rdquo;
+            </p>
           )}
         </div>
 
-        {/* Ratings */}
+        {/* Performance ratings */}
         <div className="px-5 py-4 border-b border-border">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
             <Gauge className="w-3.5 h-3.5" /> Performance Ratings
           </p>
           <div className="space-y-3">
@@ -261,8 +191,8 @@ export function TeamInfoCard({ teamNumber, initialInfo }: Props) {
         {/* Strengths & Weaknesses */}
         {(info.advantages || info.disadvantages) && (
           <div className="px-5 py-4 border-b border-border">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-1.5">
-              <AlertCircle className="w-3.5 h-3.5" /> Analysis
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+              Analysis
             </p>
             <div className="space-y-3">
               {info.advantages && (
@@ -290,15 +220,8 @@ export function TeamInfoCard({ teamNumber, initialInfo }: Props) {
         {/* Additional notes */}
         {info.additionalInfo && (
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Notes</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Notes</p>
             <p className="text-sm text-foreground leading-relaxed">{info.additionalInfo}</p>
-          </div>
-        )}
-
-        {/* Empty state when no data filled in yet */}
-        {!info.advantages && !info.disadvantages && !info.additionalInfo && !info.shootingDescription && (
-          <div className="px-5 py-4 text-center">
-            <p className="text-xs text-muted-foreground">No scouting notes yet. Click Edit to add details about this robot.</p>
           </div>
         )}
       </CardContent>
