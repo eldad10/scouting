@@ -30,10 +30,10 @@ export class FormInput {
   scoutername: string
   matchnumber: number
   teamnumber: string
-  auto_balls: string
+  auto_balls: number
   auto_climb: boolean
   auto_labels: string
-  teleop_balls: string
+  teleop_balls: number
   teleop_climb_level: number
   defence_rating: number
   delivery_rating: number
@@ -44,10 +44,10 @@ export class FormInput {
       this.scoutername = formInClient.scouterName
       this.matchnumber = formInClient.matchNumber
       this.teamnumber = formInClient.teamNumber
-      this.auto_balls = formInClient.autoBalls
+      this.auto_balls = Number(formInClient.autoBalls) || 0
       this.auto_climb = formInClient.autoClimb
       this.auto_labels = formInClient.autoLabels
-      this.teleop_balls = formInClient.teleopBalls
+      this.teleop_balls = Number(formInClient.teleopBalls) || 0
       this.teleop_climb_level = formInClient.teleopClimbLevel
       this.defence_rating = formInClient.defenceRating
       this.delivery_rating = formInClient.deliveryRating
@@ -60,10 +60,10 @@ export class Form {
   scouterName: string
   matchNumber: number
   teamNumber: string
-  autoBalls: string
+  autoBalls: number
   autoClimb: boolean
   autoLabels: string
-  teleopBalls: string
+  teleopBalls: number
   teleopClimbLevel: number
   defenceRating: number
   deliveryRating: number
@@ -74,27 +74,13 @@ export class Form {
   climbScore?: number = 0
   totalScore?: number = 0
 
-  private getBallsPoints(range: string, isTeleop: boolean): number {
+  private getBallsPoints(ballCount: number, isTeleop: boolean): number {
     if (isTeleop) {
-      switch(range) {
-        case '0-10': return 5
-        case '10-20': return 15
-        case '20-40': return 30
-        case '40-60': return 50
-        case '60-80': return 70
-        case '80-100': return 90
-        case '100+': return 110
-        default: return 0
-      }
+      // Teleop: 1 ball = ~1.1 points (110 points for ~100 balls)
+      return Math.round(ballCount * 1.1)
     } else {
-      switch(range) {
-        case '0-5': return 2.5
-        case '5-10': return 7.5
-        case '10-15': return 12.5
-        case '15-20': return 17.5
-        case '20+': return 22.5
-        default: return 0
-      }
+      // Auto: 1 ball = ~1.125 points (22.5 points for ~20 balls)
+      return Math.round(ballCount * 1.125)
     }
   }
 

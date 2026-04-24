@@ -20,10 +20,10 @@ interface FormState {
   scouterName: string
   matchNumber: string
   teamNumber: string
-  autoBalls: string
+  autoBalls: string | number
   autoClimb: boolean
   autoLabels: Set<string>
-  teleopBalls: string
+  teleopBalls: string | number
   teleopClimbLevel: number
   defenceRating: number
   deliveryRating: number
@@ -62,8 +62,8 @@ export default function CreateFormPage() {
     if (!formData.scouterName.trim()) return "Scouter name is required"
     if (!formData.matchNumber.trim()) return "Match number is required"
     if (!formData.teamNumber.trim()) return "Team number is required"
-    if (!formData.autoBalls) return "Auto balls range is required"
-    if (!formData.teleopBalls) return "Teleop balls range is required"
+    if (!formData.autoBalls && formData.autoBalls !== 0) return "Auto balls count is required"
+    if (!formData.teleopBalls && formData.teleopBalls !== 0) return "Teleop balls count is required"
 
     const matchNum = Number.parseInt(formData.matchNumber, 10)
     if (isNaN(matchNum) || matchNum < 1) {

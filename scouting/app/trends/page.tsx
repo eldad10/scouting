@@ -52,35 +52,15 @@ export default function TrendsPage() {
           .sort((a, b) => a.matchNumber - b.matchNumber)
 
         const data: TrendData[] = teamForms.map((form) => {
+          // Calculate auto score from ball count (numeric)
+          const autoBallCount = typeof form.autoBalls === 'number' ? form.autoBalls : parseInt(form.autoBalls) || 0
           const autoScore =
-            (form.autoBalls === '0-5'
-              ? 2.5
-              : form.autoBalls === '5-10'
-                ? 7.5
-                : form.autoBalls === '10-15'
-                  ? 12.5
-                  : form.autoBalls === '15-20'
-                    ? 17.5
-                    : form.autoBalls === '20+'
-                      ? 22.5
-                      : 0) + (form.autoClimb ? 15 : 0)
+            Math.round(autoBallCount * 1.125) + (form.autoClimb ? 15 : 0)
 
+          // Calculate teleop score from ball count (numeric)
+          const teleopBallCount = typeof form.teleopBalls === 'number' ? form.teleopBalls : parseInt(form.teleopBalls) || 0
           const teleopScore =
-            (form.teleopBalls === '0-10'
-              ? 5
-              : form.teleopBalls === '10-20'
-                ? 15
-                : form.teleopBalls === '20-40'
-                  ? 30
-                  : form.teleopBalls === '40-60'
-                    ? 50
-                    : form.teleopBalls === '60-80'
-                      ? 70
-                      : form.teleopBalls === '80-100'
-                        ? 90
-                        : form.teleopBalls === '100+'
-                          ? 110
-                          : 0) +
+            Math.round(teleopBallCount * 1.1) +
             (form.teleopClimbLevel === 1
               ? 10
               : form.teleopClimbLevel === 2
