@@ -257,6 +257,12 @@ return res;
     return res.ok
   },
 
+  async getAllTeamInfo(): Promise<TeamInfo[]> {
+    const res = await fetch("/api/getAllTeamInfo")
+    if (!res.ok) return []
+    return res.json()
+  },
+
   // Rankings API
   async getRankings(sortBy: "auto" | "teleop" | "climb" | "overall" = "overall"): Promise<RankingData[]> {
     let rankings: RankingData[] = await (await fetch("/api/getRankings")).json()

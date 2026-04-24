@@ -1,9 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Bot, Zap, Shield, Gauge, Crosshair, ChevronsUpDown, CheckCircle2, XCircle, Trophy, Target } from "lucide-react"
-import { TeamInfo, Form } from "@/lib/api"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Bot, Zap, Shield, Gauge, Crosshair, ChevronsUpDown,
+  CheckCircle2, XCircle, Trophy, Target, Pencil, X, Save, Plus,
+} from "lucide-react"
+import { TeamInfo, Form, api } from "@/lib/api"
 
 interface Props {
   teamNumber: string
@@ -11,47 +20,74 @@ interface Props {
   forms?: Form[]
 }
 
+const EMPTY_INFO = (teamNumber: string): TeamInfo => ({
+  teamNumber,
+  shooterType: "fixed",
+  shooterWidth: "single",
+  shootingPosition: "fixed",
+  shootingDescription: "",
+  deliveryRating: 3,
+  defenceRating: 3,
+  speedBalanceRating: 3,
+  advantages: "",
+  disadvantages: "",
+  additionalInfo: "",
+  statboticsRank: null,
+})
+
 function RatingBar({ value, max = 5, color }: { value: number; max?: number; color: string }) {
   const pct = Math.round((value / max) * 100)
   return (
     <div className="flex items-center gap-3 w-full">
       <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all ${color}`}
-          style={{ width: `${pct}%` }}
-        />
+        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
       </div>
       <span className="text-sm font-bold w-6 text-right tabular-nums">{value}</span>
     </div>
   )
 }
 
+function RatingInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs">{label}</Label>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onChange(n)}
+            className={`w-8 h-8 rounded text-sm font-bold border transition-colors ${
+              value === n
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted border-border hover:border-primary text-muted-foreground"
+            }`}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function getBallsMidpoint(range: string, isTeleop: boolean): number {
   if (isTeleop) {
-    switch (range) {
-      case "0-10":   return 5
-      case "10-20":  return 15
-      case "20-40":  return 30
-      case "40-60":  return 50
-      case "60-80":  return 70
-      case "80-100": return 90
-      case "100+":   return 105
-      default:       return 0
-    }
+    const map: Record<string, number> = { "0-10": 5, "10-20": 15, "20-40": 30, "40-60": 50, "60-80": 70, "80-100": 90, "100+": 105 }
+    return map[range] ?? 0
   } else {
-    switch (range) {
-      case "0-5":   return 2.5
-      case "5-10":  return 7.5
-      case "10-15": return 12.5
-      case "15-20": return 17.5
-      case "20+":   return 22
-      default:      return 0
-    }
+    const map: Record<string, number> = { "0-5": 2.5, "5-10": 7.5, "10-15": 12.5, "15-20": 17.5, "20+": 22 }
+    return map[range] ?? 0
   }
 }
 
 export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
-  // Compute avg total balls scored per match from scouting forms
+  const [info, setInfo] = useState<TeamInfo | null>(initialInfo)
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState<TeamInfo>(initialInfo ?? EMPTY_INFO(teamNumber))
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+
   const avgBallsScored =
     forms.length > 0
       ? (
@@ -62,8 +98,157 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
         ).toFixed(1)
       : null
 
-  // ── EMPTY STATE — no DB record yet ─────────────────────────────────────────
-  if (!initialInfo) {
+  const set = (key: keyof TeamInfo, value: any) =>
+    setDraft((prev) => ({ ...prev, [key]: value }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    setSaveError(null)
+    try {
+      const ok = await api.upsertTeamInfo({ ...draft, teamNumber })
+      if (!ok) throw new Error("Server returned an error")
+      setInfo({ ...draft, teamNumber })
+      setEditing(false)
+    } catch (e: any) {
+      setSaveError(e.message ?? "Failed to save")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCancel = () => {
+    setDraft(info ?? EMPTY_INFO(teamNumber))
+    setEditing(false)
+    setSaveError(null)
+  }
+
+  // ── EDIT / ADD FORM ──────────────────────────────────────────────────────
+  if (editing) {
+    return (
+      <Card>
+        <div className="bg-primary/5 border-b border-border px-5 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bot className="w-4 h-4 text-primary" />
+            <span className="font-semibold text-sm">{info ? "Edit" : "Add"} Robot Intel — Team {teamNumber}</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleCancel} className="h-7 w-7 p-0">
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+        <CardContent className="p-5 space-y-5">
+          {/* Statbotics rank */}
+          <div className="space-y-1">
+            <Label className="text-xs">Statbotics Rank (optional)</Label>
+            <Input
+              type="number"
+              placeholder="e.g. 47"
+              value={draft.statboticsRank ?? ""}
+              onChange={(e) => set("statboticsRank", e.target.value ? Number(e.target.value) : null)}
+              className="w-40"
+            />
+          </div>
+
+          {/* Shooter */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Shooter Type</Label>
+              <Select value={draft.shooterType} onValueChange={(v) => set("shooterType", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fixed">Fixed</SelectItem>
+                  <SelectItem value="turret">Turret</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Shooter Width</Label>
+              <Select value={draft.shooterWidth} onValueChange={(v) => set("shooterWidth", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="single">Single</SelectItem>
+                  <SelectItem value="double">Double</SelectItem>
+                  <SelectItem value="wide">Wide</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Shooting Position</Label>
+              <Select value={draft.shootingPosition} onValueChange={(v) => set("shootingPosition", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fixed">Fixed Spot</SelectItem>
+                  <SelectItem value="all_around">All Around</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-xs">Shooting Description</Label>
+            <Input
+              placeholder="Brief description of shooting style..."
+              value={draft.shootingDescription}
+              onChange={(e) => set("shootingDescription", e.target.value)}
+            />
+          </div>
+
+          {/* Ratings */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <RatingInput label="Delivery (1-5)" value={draft.deliveryRating} onChange={(v) => set("deliveryRating", v)} />
+            <RatingInput label="Defence (1-5)" value={draft.defenceRating} onChange={(v) => set("defenceRating", v)} />
+            <RatingInput label="Speed / Balance (1-5)" value={draft.speedBalanceRating} onChange={(v) => set("speedBalanceRating", v)} />
+          </div>
+
+          {/* Analysis */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Advantages</Label>
+              <Textarea
+                placeholder="What this robot does well..."
+                value={draft.advantages}
+                onChange={(e) => set("advantages", e.target.value)}
+                rows={3}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Disadvantages</Label>
+              <Textarea
+                placeholder="Weaknesses or limitations..."
+                value={draft.disadvantages}
+                onChange={(e) => set("disadvantages", e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-xs">Additional Notes</Label>
+            <Textarea
+              placeholder="Anything else worth noting..."
+              value={draft.additionalInfo}
+              onChange={(e) => set("additionalInfo", e.target.value)}
+              rows={2}
+            />
+          </div>
+
+          {saveError && (
+            <p className="text-sm text-destructive">{saveError}</p>
+          )}
+
+          <div className="flex gap-2 pt-1">
+            <Button onClick={handleSave} disabled={saving} size="sm">
+              <Save className="w-3.5 h-3.5 mr-1.5" />
+              {saving ? "Saving..." : "Save"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCancel}>Cancel</Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // ── EMPTY STATE ──────────────────────────────────────────────────────────
+  if (!info) {
     return (
       <Card className="border-dashed">
         <CardContent className="flex items-center gap-3 py-5 px-5">
@@ -73,26 +258,29 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
               No robot intel on file for Team {teamNumber}
             </p>
             <p className="text-xs text-muted-foreground/70 mt-0.5">
-              Add a row to the <code className="text-xs bg-muted px-1 rounded">team_info</code> table to see the full scouting profile here.
+              Add a profile so scouts can see shooter type, ratings and strategic notes.
             </p>
           </div>
-          {avgBallsScored && (
-            <div className="ml-auto text-right shrink-0">
-              <p className="text-lg font-bold tabular-nums">{avgBallsScored}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg balls / match</p>
-            </div>
-          )}
+          <div className="ml-auto flex items-center gap-4 shrink-0">
+            {avgBallsScored && (
+              <div className="text-right">
+                <p className="text-lg font-bold tabular-nums text-blue-600 dark:text-blue-400">{avgBallsScored}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg balls / match</p>
+              </div>
+            )}
+            <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              Add Intel
+            </Button>
+          </div>
         </CardContent>
       </Card>
     )
   }
 
-  const info = initialInfo
-
-  // ── READ MODE ──────────────────────────────────────────────────────────────
+  // ── READ VIEW ────────────────────────────────────────────────────────────
   return (
     <Card className="overflow-hidden">
-      {/* Header strip */}
       <div className="bg-primary/5 border-b border-border px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -104,7 +292,6 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
           </div>
         </div>
 
-        {/* Key stats row in header */}
         <div className="flex items-center gap-4 sm:gap-6">
           {info.statboticsRank != null && (
             <div className="flex flex-col items-center">
@@ -128,11 +315,14 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg balls / match</p>
             </div>
           )}
+          <Button size="sm" variant="ghost" onClick={() => { setDraft(info); setEditing(true) }} className="text-muted-foreground hover:text-foreground">
+            <Pencil className="w-3.5 h-3.5 mr-1.5" />
+            Edit
+          </Button>
         </div>
       </div>
 
       <CardContent className="p-0">
-        {/* Shooter profile */}
         <div className="px-5 py-4 border-b border-border">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
             <Crosshair className="w-3.5 h-3.5" /> Shooter Profile
@@ -152,13 +342,10 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
             </div>
           </div>
           {info.shootingDescription && (
-            <p className="text-sm text-muted-foreground leading-relaxed italic">
-              &ldquo;{info.shootingDescription}&rdquo;
-            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{info.shootingDescription}&rdquo;</p>
           )}
         </div>
 
-        {/* Performance ratings */}
         <div className="px-5 py-4 border-b border-border">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
             <Gauge className="w-3.5 h-3.5" /> Performance Ratings
@@ -188,12 +375,9 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
           </div>
         </div>
 
-        {/* Strengths & Weaknesses */}
         {(info.advantages || info.disadvantages) && (
           <div className="px-5 py-4 border-b border-border">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              Analysis
-            </p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Analysis</p>
             <div className="space-y-3">
               {info.advantages && (
                 <div className="flex gap-2.5">
@@ -217,7 +401,6 @@ export function TeamInfoCard({ teamNumber, initialInfo, forms = [] }: Props) {
           </div>
         )}
 
-        {/* Additional notes */}
         {info.additionalInfo && (
           <div className="px-5 py-4">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Notes</p>

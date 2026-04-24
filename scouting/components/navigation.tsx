@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Search, Users, FileText, Trophy, BarChart3, Plus, Menu, X, TrendingUp, GitCompare, Database, WifiOff, Download } from "lucide-react"
+import { Search, Users, FileText, Trophy, BarChart3, Plus, Menu, X, TrendingUp, GitCompare, Database, WifiOff, Download, Bot } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useState } from "react"
 
@@ -38,6 +38,11 @@ const navigationItems = [
     name: "Compare",
     href: "/compare",
     icon: GitCompare,
+  },
+  {
+    name: "Intel",
+    href: "/team-intel",
+    icon: Bot,
   },
   {
     name: "Analytics",
