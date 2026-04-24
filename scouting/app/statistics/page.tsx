@@ -76,36 +76,12 @@ export default function StatisticsPage() {
     }
   }, [searchParams])
 
-  // Helper function to get ball points from range
-  const getBallPoints = (range: string, isTeleop: boolean): number => {
-    if (isTeleop) {
-      switch(range) {
-        case '0-10': return 5
-        case '10-20': return 15
-        case '20-40': return 30
-        case '40-60': return 50
-        case '60-80': return 70
-        case '80-100': return 90
-        case '100+': return 110
-        default: return 0
-      }
-    } else {
-      switch(range) {
-        case '0-5': return 2.5
-        case '5-10': return 7.5
-        case '10-15': return 12.5
-        case '15-20': return 17.5
-        case '20+': return 22.5
-        default: return 0
-      }
-    }
-  }
-
+  // balls are now stored as integers — no range-to-midpoint conversion needed
   const avgAutoScore =
     filteredForms.length > 0
       ? (
           filteredForms.reduce(
-            (sum, form) => sum + getBallPoints(form.autoBalls, false) + (form.autoClimb ? 15 : 0),
+            (sum, form) => sum + Number(form.autoBalls) + (form.autoClimb ? 15 : 0),
             0,
           ) / filteredForms.length
         ).toFixed(1)
@@ -115,7 +91,7 @@ export default function StatisticsPage() {
     filteredForms.length > 0
       ? (
           filteredForms.reduce(
-            (sum, form) => sum + getBallPoints(form.teleopBalls, true),
+            (sum, form) => sum + Number(form.teleopBalls),
             0,
           ) / filteredForms.length
         ).toFixed(1)
@@ -159,13 +135,15 @@ export default function StatisticsPage() {
       : "0.0"
 
   const scoringData = filteredForms.map((form) => {
-    const autoClimbPts = form.autoClimb ? 15 : 0
+    const autoClimbPts  = form.autoClimb ? 15 : 0
     const teleopClimbPts = form.teleopClimbLevel === 1 ? 10 : form.teleopClimbLevel === 2 ? 20 : form.teleopClimbLevel === 3 ? 30 : 0
+    const autoPts   = Number(form.autoBalls)   + autoClimbPts
+    const teleopPts = Number(form.teleopBalls) + teleopClimbPts
     return {
       match: `Match ${form.matchNumber}`,
-      auto: getBallPoints(form.autoBalls, false) + autoClimbPts,
-      teleop: getBallPoints(form.teleopBalls, true) + teleopClimbPts,
-      total: getBallPoints(form.autoBalls, false) + autoClimbPts + getBallPoints(form.teleopBalls, true) + teleopClimbPts,
+      auto:   autoPts,
+      teleop: teleopPts,
+      total:  autoPts + teleopPts,
     }
   })
 

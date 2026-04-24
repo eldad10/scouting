@@ -33,10 +33,10 @@ const INITIAL_FORM_STATE: FormState = {
   scouterName: "",
   matchNumber: "",
   teamNumber: "",
-  autoBalls: "",
+  autoBalls: "0",
   autoClimb: false,
   autoLabels: new Set(),
-  teleopBalls: "",
+  teleopBalls: "0",
   teleopClimbLevel: 0,
   defenceRating: 0,
   deliveryRating: 0,
@@ -57,12 +57,16 @@ export default function CreateFormPage() {
     if (!formData.scouterName.trim()) return "Scouter name is required"
     if (!formData.matchNumber.trim()) return "Match number is required"
     if (!formData.teamNumber.trim()) return "Team number is required"
-    if (!formData.autoBalls) return "Auto balls range is required"
-    if (!formData.teleopBalls) return "Teleop balls range is required"
 
     const matchNum = Number.parseInt(formData.matchNumber, 10)
     if (isNaN(matchNum) || matchNum < 1) {
       return "Match number must be a valid positive number"
+    }
+    if (isNaN(Number(formData.autoBalls)) || Number(formData.autoBalls) < 0) {
+      return "Auto balls must be a valid non-negative number"
+    }
+    if (isNaN(Number(formData.teleopBalls)) || Number(formData.teleopBalls) < 0) {
+      return "Teleop balls must be a valid non-negative number"
     }
 
     return null
@@ -242,24 +246,19 @@ export default function CreateFormPage() {
             <CardContent className="space-y-4 sm:space-y-6">
               {/* Balls scored in auto */}
               <div>
-                <Label className="text-sm sm:text-base font-medium mb-3 block">Balls Scored (Auto) *</Label>
-                <div className="flex gap-2 flex-wrap">
-                  {['0-5', '5-10', '10-15', '15-20', '20+'].map((range) => (
-                    <button
-                      key={range}
-                      type="button"
-                      onClick={() => handleInputChange("autoBalls", range)}
-                      disabled={loading}
-                      className={`px-4 py-2 rounded-lg font-medium transition ${
-                        formData.autoBalls === range
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
-                      }`}
-                    >
-                      {range}
-                    </button>
-                  ))}
-                </div>
+                <Label htmlFor="autoBalls" className="text-sm sm:text-base font-medium mb-2 block">
+                  Balls Scored (Auto)
+                </Label>
+                <Input
+                  id="autoBalls"
+                  type="number"
+                  min="0"
+                  value={formData.autoBalls}
+                  onChange={(e) => handleInputChange("autoBalls", e.target.value)}
+                  disabled={loading}
+                  className="w-32 text-sm sm:text-base"
+                  placeholder="0"
+                />
               </div>
 
               {/* Auto climb checkbox */}
@@ -362,24 +361,19 @@ export default function CreateFormPage() {
             <CardContent className="space-y-4 sm:space-y-6">
               {/* Balls scored in teleop */}
               <div>
-                <Label className="text-sm sm:text-base font-medium mb-3 block">Balls Scored (Teleop) *</Label>
-                <div className="flex gap-2 flex-wrap">
-                  {['0-10', '10-20', '20-40', '40-60', '60-80', '80-100', '100+'].map((range) => (
-                    <button
-                      key={range}
-                      type="button"
-                      onClick={() => handleInputChange("teleopBalls", range)}
-                      disabled={loading}
-                      className={`px-4 py-2 rounded-lg font-medium transition ${
-                        formData.teleopBalls === range
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-200 text-slate-900 hover:bg-slate-300'
-                      }`}
-                    >
-                      {range}
-                    </button>
-                  ))}
-                </div>
+                <Label htmlFor="teleopBalls" className="text-sm sm:text-base font-medium mb-2 block">
+                  Balls Scored (Teleop)
+                </Label>
+                <Input
+                  id="teleopBalls"
+                  type="number"
+                  min="0"
+                  value={formData.teleopBalls}
+                  onChange={(e) => handleInputChange("teleopBalls", e.target.value)}
+                  disabled={loading}
+                  className="w-32 text-sm sm:text-base"
+                  placeholder="0"
+                />
               </div>
 
               {/* Climb level */}

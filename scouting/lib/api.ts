@@ -10,14 +10,28 @@ export class Team {
   }
 }
 
+export interface TeamInfo {
+  teamNumber: string
+  shooterType: 'fixed' | 'turret'
+  shooterWidth: 'single' | 'double' | 'wide'
+  shootingPosition: 'fixed' | 'all_around'
+  shootingDescription: string
+  deliveryRating: number
+  defenceRating: number
+  speedBalanceRating: number
+  advantages: string
+  disadvantages: string
+  additionalInfo: string
+}
+
 export class FormInput {
   scoutername: string
   matchnumber: number
   teamnumber: string
-  auto_balls: string
+  auto_balls: number
   auto_climb: boolean
   auto_labels: string
-  teleop_balls: string
+  teleop_balls: number
   teleop_climb_level: number
   defence_rating: number
   delivery_rating: number
@@ -28,10 +42,10 @@ export class FormInput {
       this.scoutername = formInClient.scouterName
       this.matchnumber = formInClient.matchNumber
       this.teamnumber = formInClient.teamNumber
-      this.auto_balls = formInClient.autoBalls
+      this.auto_balls = Number(formInClient.autoBalls) || 0
       this.auto_climb = formInClient.autoClimb
       this.auto_labels = formInClient.autoLabels
-      this.teleop_balls = formInClient.teleopBalls
+      this.teleop_balls = Number(formInClient.teleopBalls) || 0
       this.teleop_climb_level = formInClient.teleopClimbLevel
       this.defence_rating = formInClient.defenceRating
       this.delivery_rating = formInClient.deliveryRating
@@ -44,10 +58,10 @@ export class Form {
   scouterName: string
   matchNumber: number
   teamNumber: string
-  autoBalls: string
+  autoBalls: number
   autoClimb: boolean
   autoLabels: string
-  teleopBalls: string
+  teleopBalls: number
   teleopClimbLevel: number
   defenceRating: number
   deliveryRating: number
@@ -58,56 +72,30 @@ export class Form {
   climbScore?: number = 0
   totalScore?: number = 0
 
-  private getBallsPoints(range: string, isTeleop: boolean): number {
-    if (isTeleop) {
-      switch(range) {
-        case '0-10': return 5
-        case '10-20': return 15
-        case '20-40': return 30
-        case '40-60': return 50
-        case '60-80': return 70
-        case '80-100': return 90
-        case '100+': return 110
-        default: return 0
-      }
-    } else {
-      switch(range) {
-        case '0-5': return 2.5
-        case '5-10': return 7.5
-        case '10-15': return 12.5
-        case '15-20': return 17.5
-        case '20+': return 22.5
-        default: return 0
-      }
-    }
-  }
-
   constructor(input: FormInput) {
     this.scouterName = input.scoutername
     this.matchNumber = input.matchnumber
     this.teamNumber = input.teamnumber
-    this.autoBalls = input.auto_balls
+    this.autoBalls = Number(input.auto_balls) || 0
     this.autoClimb = input.auto_climb
     this.autoLabels = input.auto_labels
-    this.teleopBalls = input.teleop_balls
+    this.teleopBalls = Number(input.teleop_balls) || 0
     this.teleopClimbLevel = input.teleop_climb_level
     this.defenceRating = input.defence_rating
     this.deliveryRating = input.delivery_rating
     this.teleopLabels = input.teleop_labels
     this.comments = input.comments
 
-    this.autoScore = 
-      this.getBallsPoints(this.autoBalls, false) +
-      (this.autoClimb ? 15 : 0)
+    const autoClimbPts = this.autoClimb ? 15 : 0
+    const teleopClimbPts =
+      this.teleopClimbLevel === 1 ? 10 :
+      this.teleopClimbLevel === 2 ? 20 :
+      this.teleopClimbLevel === 3 ? 30 : 0
 
-    this.teleopScore =
-      this.getBallsPoints(this.teleopBalls, true)
-
-    this.climbScore =
-      (this.autoClimb ? 15 : 0) +
-      (this.teleopClimbLevel === 1 ? 10 : this.teleopClimbLevel === 2 ? 20 : this.teleopClimbLevel === 3 ? 30 : 0)
-
-    this.totalScore = this.autoScore + this.teleopScore + this.climbScore
+    this.autoScore   = this.autoBalls + autoClimbPts
+    this.teleopScore = this.teleopBalls + teleopClimbPts
+    this.climbScore  = autoClimbPts + teleopClimbPts
+    this.totalScore  = this.autoBalls + autoClimbPts + this.teleopBalls + teleopClimbPts
   }
 }
 
@@ -236,5 +224,21 @@ return res;
       }
     })
     return sorted
+  },
+
+  // Team Info API
+  async getTeamInfo(teamNumber: string): Promise<TeamInfo | null> {
+    const res = await fetch(`/api/getTeamInfo?team=${encodeURIComponent(teamNumber)}`)
+    if (!res.ok) return null
+    return res.json()
+  },
+
+  async upsertTeamInfo(info: TeamInfo): Promise<boolean> {
+    const res = await fetch("/api/upsertTeamInfo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(info),
+    })
+    return res.ok
   },
 }
