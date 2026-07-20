@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -47,6 +47,30 @@ export function TeamInfoCard({ teamNumber, initialInfo }: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState<TeamInfo>(info)
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  // Re-fetch the robot info from the DB whenever the selected team changes.
+  // Without this the card keeps showing the first team's data because
+  // useState only reads its initial argument on the first mount.
+  useEffect(() => {
+    let cancelled = false
+    setEditing(false)
+    setLoading(true)
+    api
+      .getTeamInfo(teamNumber)
+      .then((fresh) => {
+        if (cancelled) return
+        const next = fresh ?? EMPTY_INFO(teamNumber)
+        setInfo(next)
+        setDraft(next)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [teamNumber])
 
   const handleEdit = () => {
     setDraft({ ...info })
@@ -174,8 +198,8 @@ export function TeamInfoCard({ teamNumber, initialInfo }: Props) {
           <Bot className="w-4 h-4" />
           Robot Info — Team {teamNumber}
         </CardTitle>
-        <Button size="sm" variant="outline" onClick={handleEdit}>
-          <Pencil className="w-3 h-3 mr-1" /> Edit
+        <Button size="sm" variant="outline" onClick={handleEdit} disabled={loading}>
+          <Pencil className="w-3 h-3 mr-1" /> {loading ? "Loading…" : "Edit"}
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
